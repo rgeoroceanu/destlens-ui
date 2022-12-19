@@ -1,0 +1,12 @@
+.final-step-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.final-step-button {
+    width: 100%;
+    max-width: 400px;
+    height: 60px;
+    color: white!important;
+}

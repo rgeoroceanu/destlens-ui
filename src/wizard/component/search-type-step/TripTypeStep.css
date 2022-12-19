@@ -1,0 +1,24 @@
+.controls-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0;
+}
+
+.control-label {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0 !important;
+  cursor: pointer;
+}
+
+.purpose-group {
+  margin: 0 auto 40px auto;
+  width: 100%;
+}
+
+.purpose-item {
+  width: 100%;
+}

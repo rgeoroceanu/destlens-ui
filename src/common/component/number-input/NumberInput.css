@@ -1,0 +1,23 @@
+.number-input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.number-input-field {
+    width: 60px;
+}
+
+.number-input-button {
+    height: 40px;
+    width: 40px;
+}
+
+.number-input-button:hover {
+    background: none !important;
+}
+
+.number-input-button-icon {
+    color: grey;
+    font-size: 15px !important;
+}

@@ -43,12 +43,12 @@ class SearchResult extends Component<any, any> {
               <div className={"search-result-location"}>{currentValue.accommodation.city + ', ' + currentValue.accommodation.country}</div>
               <div className={"search-result-details-wrapper"}>
                 <div className={"search-result-details-rating"}>
-                  <div className={"search-result-rating-stars"}>{this.getRatingComponent(currentValue.accommodation.ratingValue)}</div>
+                  <div className={"search-result-rating-image"}>{this.getRatingComponent(currentValue.accommodation.ratingImageUrl)}</div>
                   <div className={"search-result-rating-display"}>{this.getRatingDisplay(currentValue.accommodation.ratingDisplay)}</div>
-                  <div className={"search-result-price"}>{ Math.floor(currentValue.accommodation.totalStayPrice) + ' ' + currentValue.accommodation.currency}</div>
+                  <div className={"search-result-price"}>{ currentValue.accommodation.priceLevelDisplay }</div>
                 </div>
                 <div className={"search-result-details-deal"}>
-                  <img className={"search-result-booking-logo"} src={"/booking_logo.png"} alt="logo" />
+                  <img className={"search-result-booking-logo"} src={"/tripadvisor_logo.png"} alt="logo" />
                   <Button
                     href={currentValue.accommodation.url}
                     target={"_blank"}
@@ -73,21 +73,8 @@ class SearchResult extends Component<any, any> {
     );
   }
 
-  private getRatingComponent(ratingValue: number) {
-    const stars = [];
-    const ratingScale5 = ratingValue / 2;
-    const fullStars = Math.floor(ratingScale5);
-    const hasHalfStar = ratingScale5 - Math.floor(ratingScale5) >= 0.5;
-    for (let i = 0; i < fullStars; i++) {
-      const star = <Star key={"search-result-star-" + i} color="primary" className={"search-result-star"}></Star>;
-      stars.push(star);
-    }
-
-    if (hasHalfStar) {
-      stars.push(<StarHalf key={"search-result-star-" + fullStars} color="primary" className={"search-result-star"}></StarHalf>);
-    }
-
-    return <span> {stars} </span>
+  private getRatingComponent(ratingImageUrl: string) {
+    return  <img src={ratingImageUrl} alt={"rating"}/>
   }
 
   private getRatingDisplay(ratingDisplay: string) {

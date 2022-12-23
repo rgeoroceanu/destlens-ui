@@ -23,7 +23,7 @@ export const searchAsync = (query: string, searchFunction: any): Promise<Nameabl
       resolve(
         searchFunction(query)
       );
-    }, 1500);
+    }, 1000);
   });
 };
 
@@ -40,7 +40,7 @@ function SearchInput({searchFunction, className = '', onValueChange, currentValu
       searchAsync(query, searchFunction)
         .then(callback)
         .catch(e => console.log(e));
-    }, 1500),
+    }, 500),
     []
   );
 

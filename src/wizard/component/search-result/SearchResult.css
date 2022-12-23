@@ -68,6 +68,7 @@
     font-size: 14px;
     color: grey;
     font-weight: 500;
+    margin-bottom: 10px;
 }
 
 .search-result-details-wrapper {
@@ -78,7 +79,8 @@
 }
 
 .search-result-booking-logo {
-    width: 150px;
+    width: 130px;
+    margin-bottom: 15px;
 }
 
 .search-result-details-deal {
@@ -91,8 +93,8 @@
 
 }
 
-.search-result-rating-stars {
-    white-space: nowrap;
+.search-result-rating-image {
+    margin-left: -6px;
 }
 
 .search-result-rating-display {

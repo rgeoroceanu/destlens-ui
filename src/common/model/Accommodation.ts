@@ -12,9 +12,10 @@ interface Accommodation extends Nameable {
   ratingValue: number
   ratingDisplay: string
   reviewCount: number
-  totalStayPrice: number
+  priceLevelDisplay: string
   currency: string
   url: string
+  ratingImageUrl: string
 }
 
 export default Accommodation;

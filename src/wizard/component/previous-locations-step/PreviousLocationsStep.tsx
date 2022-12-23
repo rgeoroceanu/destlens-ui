@@ -107,13 +107,7 @@ class PreviousLocationsStep extends Component<any, any> {
   private generateLocationOption(props: any, option: Accommodation): ReactElement {
     return (<Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
       <div className={"location-option-wrapper"}>
-        <img className={"location-option-image"}
-          loading="lazy"
-          width="100"
-          src={option.mediumPhotoUrl}
-          srcSet={`${option.mediumPhotoUrl} 2x`}
-          alt=""
-        />
+        <Hotel className={"location-option-icon"} />
         <div className={"location-wrapper-text"}>
           <div className={"location-wrapper-title"}>
             {option.name}

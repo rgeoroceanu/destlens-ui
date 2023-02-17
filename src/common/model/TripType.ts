@@ -1,11 +1,12 @@
-import TripPurpose from "./TripPurpose";
-
-class TripType {
-  purpose: TripPurpose | undefined
-  accommodation: boolean | undefined;
-  flight: boolean | undefined;
-  transfer: boolean | undefined;
-  carRental: boolean | undefined;
+enum TripType {
+  beach = 'BEACH',
+  sports = 'SPORTS',
+  city = 'CITY',
+  resort = 'RESORT',
+  road_trip = 'ROADTRIP',
+  sightseeing = 'SIGHTSEEING',
+  mountain = "MOUNTAIN",
+  ski = "SKI"
 }
 
 export default TripType;

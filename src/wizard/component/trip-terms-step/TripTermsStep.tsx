@@ -1,33 +1,31 @@
 import React, {Component} from 'react';
-import './TermsStep.css';
+import './TripTermsStep.css';
 import {AdapterDayjs} from '@mui/x-date-pickers-pro/AdapterDayjs';
 import TextField from "@mui/material/TextField";
-import {Box, InputAdornment} from "@mui/material";
+import {Box, InputAdornment, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import {CalendarMonth} from "@mui/icons-material";
 import NumberInput from "../../../common/component/number-input/NumberInput";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {DateRange, DateRangePicker, LocalizationProvider} from '@mui/x-date-pickers-pro';
 import TripTerms from "../../../common/model/TripTerms";
+import PeriodType from "../../../common/model/PeriodType";
 
 interface TripTermsStepConfig {
   onValueChange: (value: TripTerms) => void,
   initialValueExtractor?: () => TripTerms
 }
 
-const initialStartDate = new Date();
-const initialEndDate = new Date();
-initialEndDate.setDate(initialStartDate.getDate() + 1)
-
 const initialValue: TripTerms = {
-  startDate: initialStartDate,
-  endDate: initialEndDate,
+  period: PeriodType.summer,
+  startDate: null,
+  endDate: null,
   adults: 2,
   children: 0,
   childrenAges: [],
-  rooms: 1
+  rooms: 1,
 };
 
-class TermsStep extends Component<any, any> {
+class TripTermsStep extends Component<any, any> {
 
   constructor(props: TripTermsStepConfig) {
     super(props);
@@ -42,8 +40,42 @@ class TermsStep extends Component<any, any> {
     return (
       <div>
         <div className={"title"}>Select terms</div>
-        <div className={"subtitle"}>Select trip period and companions.</div>
-        <LocalizationProvider
+        <div className={"subtitle"}>Select period and companions</div>
+
+        <div className={"section"}>Period</div>
+        <ToggleButtonGroup className={"period-group"}
+                           value={this.state.currentValue.period}
+                           exclusive
+                           onChange={this.handlePeriodChange.bind(this)}
+                           aria-label={"period"}>
+          <ToggleButton className={"period-item"}
+                        value={PeriodType.summer}
+                        color={"primary"}>
+            Summer
+          </ToggleButton>
+          <ToggleButton className={"period-item"}
+                        value={PeriodType.autumn}
+                        color={"primary"}>
+            Autumn
+          </ToggleButton>
+          <ToggleButton className={"period-item"}
+                        value={PeriodType.winter}
+                        color={"primary"}>
+            Winter
+          </ToggleButton>
+          <ToggleButton className={"period-item"}
+                        value={PeriodType.spring}
+                        color={"primary"}>
+            Spring
+          </ToggleButton>
+          <ToggleButton className={"period-item"}
+                        value={PeriodType.specific}
+                        color={"primary"}>
+            Specific
+          </ToggleButton>
+        </ToggleButtonGroup>
+
+        { this.state.currentValue.period === PeriodType.specific ? <LocalizationProvider
           dateAdapter={AdapterDayjs}
           localeText={{ start: 'Check-in', end: 'Check-out' }}>
           <DateRangePicker
@@ -87,8 +119,9 @@ class TermsStep extends Component<any, any> {
               </React.Fragment>
             )}
           />
-        </LocalizationProvider>
+        </LocalizationProvider> : null }
 
+        <div className={"section"}>Who's traveling?</div>
         <div className={"controls-wrapper"}>
           <FormControlLabel className={"control-label"}
                             control={<NumberInput onValueChange={val => this.onAttendanceChange(val, "adults")} defaultValue={this.state.currentValue.adults}/>}
@@ -106,6 +139,8 @@ class TermsStep extends Component<any, any> {
                             label="Rooms"
                             labelPlacement={"start"} />
         </div>
+
+
       </div>
     );
   }
@@ -170,6 +205,17 @@ class TermsStep extends Component<any, any> {
     });
     this.props.onValueChange(newValue);
   }
+
+  handlePeriodChange(event: React.MouseEvent<HTMLElement> | null, newPeriod: PeriodType | null) {
+    const newValue = {
+      ...this.state.currentValue,
+      period: newPeriod
+    };
+    this.setState({
+      currentValue: newValue
+    });
+    this.props.onValueChange(newValue);
+  };
 }
 
-export default TermsStep;
+export default TripTermsStep;

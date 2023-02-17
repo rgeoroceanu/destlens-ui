@@ -1,0 +1,12 @@
+.tags-search {
+    width: 100%;
+    margin-bottom: 20px !important;
+}
+
+.tags-wrapper {
+    min-height: 50px;
+}
+
+.tag {
+    margin: 5px 10px !important;
+}

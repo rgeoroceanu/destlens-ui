@@ -1,9 +1,9 @@
 import React from 'react';
-import {screen} from '@testing-library/react';
-import FinalStep from './FinalStep';
+import { render, screen } from '@testing-library/react';
+import TripSearchTags from './TripSearchTags';
 
 test('renders learn react link', () => {
-  new FinalStep({ onStartSearch: () => {}}).render();
+  render(<TripSearchTags />);
   const linkElement = screen.getByText(/learn react/i);
   expect(linkElement).toBeInTheDocument();
 });

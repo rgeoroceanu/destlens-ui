@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import DestinationStep from './DestinationStep';
+import TripSearchTerms from './TripSearchTerms';
 
 test('renders learn react link', () => {
-  new DestinationStep({ onDestinationSelect: v => {}}).render();
+  render(<TripSearchTerms />);
   const linkElement = screen.getByText(/learn react/i);
   expect(linkElement).toBeInTheDocument();
 });

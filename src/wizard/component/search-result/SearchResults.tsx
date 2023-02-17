@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
-import './SearchResult.css';
+import './SearchResults.css';
 import AccommodationMatch from "../../../common/model/AccommodationMatch";
-import {ArrowBackIos, ArrowForwardIos, Star, StarHalf} from "@mui/icons-material";
+import {ArrowBackIos, ArrowForwardIos} from "@mui/icons-material";
 import {Button, IconButton} from "@mui/material";
 
 interface SearchResultConfig {
   matches: AccommodationMatch[]
 }
 
-class SearchResult extends Component<any, any> {
+class SearchResults extends Component<any, any> {
 
   constructor(props: SearchResultConfig) {
     super(props);
@@ -96,4 +96,4 @@ class SearchResult extends Component<any, any> {
   }
 }
 
-export default SearchResult;
+export default SearchResults;

@@ -1,0 +1,6 @@
+.search-results-wrapper {
+    display: grid;
+    gap: 2em;
+    row-gap: 4em;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+}

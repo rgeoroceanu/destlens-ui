@@ -1,0 +1,115 @@
+.search-filter-wrapper {
+    display: grid;
+    width: 100%;
+    gap: 1em;
+    row-gap: 1.5em;
+    align-items: flex-start;
+    margin-bottom: 60px;
+    padding: 0 5px;
+}
+
+.search-filter-purpose {
+
+}
+
+.search-filter-tags {
+    grid-column: span 1;
+}
+
+.search-filter-previous-locations {
+    grid-column: span 1;
+}
+
+.location-start-icon {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.location-label {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0 0 20px 0 !important;
+}
+
+.location-start-icon {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.location-option-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.location-option-image {
+    width: 70px;
+    height: 50px;
+    border-radius: 5px;
+}
+
+.location-wrapper-text {
+    margin-left: 10px;
+}
+
+.location-wrapper-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.location-wrapper-subtitle {
+    font-size: 12px;
+    color: grey;
+}
+
+.location-option-icon {
+    margin-right: 12px;
+    width: 20px!important;
+    height: 20px!important;
+}
+
+.companions-select-wrapper{
+    grid-column: span 1;
+}
+
+.search-filter-apply {
+    color: white !important;
+    align-self: center;
+}
+
+.search-filter-type-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.search-filter-period-dates {
+    font-size: 10px;
+}
+
+@media (max-width: 599px) {
+    .search-filter-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: unset!important;
+    }
+
+    .search-filter-apply {
+        align-self: unset;
+    }
+}
+
+@media (min-width: 600px) {
+    .search-filter-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1000px) {
+    .search-filter-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+

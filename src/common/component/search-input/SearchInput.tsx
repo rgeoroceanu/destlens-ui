@@ -9,12 +9,15 @@ import {Box, debounce} from "@mui/material";
 
 interface SearchInputConfig {
   searchFunction: (query: string) => Promise<Nameable[]>;
-  onValueChange: (value: Nameable | null) => void;
+  onValueChange: (value: Nameable | null | Nameable[]) => void;
   className: string;
-  currentValue: Nameable | null;
+  currentValue: Nameable | null | Nameable[];
   initialOptions?: Nameable[];
   optionComponentGenerator?: ((props: any, option: Nameable | undefined) => ReactElement) | undefined;
   startAdornment?: ReactElement;
+  multiple?: boolean;
+  size?: "medium" | "small" | undefined;
+  label?: string;
 }
 
 export const searchAsync = (query: string, searchFunction: any): Promise<Nameable[]> => {
@@ -27,10 +30,12 @@ export const searchAsync = (query: string, searchFunction: any): Promise<Nameabl
   });
 };
 
-function SearchInput({searchFunction, className = '', onValueChange, currentValue = {name: ''}, initialOptions = [],
-                       optionComponentGenerator, startAdornment}: SearchInputConfig) {
+function SearchInput({searchFunction, className = '', onValueChange, currentValue = null, initialOptions = [],
+                       optionComponentGenerator, startAdornment, multiple = false, size = "medium", label = "Search"}: SearchInputConfig) {
+
+  const defaultValue = currentValue === null ? (multiple ? [] : {name: ''}) : currentValue;
   const [options, setOptions] = React.useState<readonly Nameable[]>(initialOptions);
-  const [value, setValue] = React.useState<Nameable | null>(currentValue);
+  const [value, setValue] = React.useState<Nameable | null | Nameable[]>(defaultValue);
   const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -45,7 +50,12 @@ function SearchInput({searchFunction, className = '', onValueChange, currentValu
   );
 
  React.useEffect(() => {
-   if (!searchQuery || searchQuery.length < 2 || searchQuery === value?.name) {
+   if (!searchQuery || searchQuery.length < 2) {
+     return;
+   }
+
+   const alreadyContained = (multiple === true && value ? (value as Nameable[]).map(v => v.name).includes(searchQuery) : searchQuery === (value as Nameable)?.name);
+   if (alreadyContained) {
      return;
    }
 
@@ -57,7 +67,7 @@ function SearchInput({searchFunction, className = '', onValueChange, currentValu
     });
   }, [searchQuery, getOptionsDelayed]);
 
-  const onChange = (event: unknown, value: Nameable | null) => {
+  const onChange = (event: unknown, value: Nameable | null | Nameable[]) => {
     setValue(value);
     onValueChange(value);
   };
@@ -78,8 +88,10 @@ function SearchInput({searchFunction, className = '', onValueChange, currentValu
 
   return (
     <Autocomplete className={"search-input " + className}
+                  size={size}
                   id="search-input"
                   sx={{ width: 300 }}
+                  multiple={multiple}
                   popupIcon={""}
                   filterOptions={filterOptions}
                   onInputChange={onInputChange}
@@ -97,7 +109,7 @@ function SearchInput({searchFunction, className = '', onValueChange, currentValu
                       variant={"outlined"}
                       className={"search-input-text"}
                       {...params}
-                      label="Search"
+                      label={label}
                       InputProps={{
                         ...params.InputProps,
                         startAdornment: (

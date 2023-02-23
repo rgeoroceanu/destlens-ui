@@ -3,10 +3,12 @@ import './TripSearchResults.css';
 import Progress from "../../../common/component/progress/Progress";
 import {Container} from "@mui/material";
 import TripSearch from "../../../common/model/TripSearch";
-import SearchResults from "../../component/search-result/SearchResults";
+import SearchResults from "../../component/search-results/SearchResults";
 import CircularProgress from "@mui/material/CircularProgress";
 import SearchApiService from "../../service/SearchApiService";
-import MatchResult from "../../../common/model/MatchResult";
+import SearchFilter from "../../../common/component/search-filter/SearchFilter";
+import withRouter from "../../../common/helper/WithRouter";
+import AccommodationMatch from "../../../common/model/AccommodationMatch";
 
 class TripSearchResults extends Component<any, any> {
 
@@ -14,17 +16,33 @@ class TripSearchResults extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
+    const tripSearch = props.location?.state?.tripSearch;
     this.state = {
-      tripSearchFormValues: new TripSearch()
+      tripSearch: tripSearch ? tripSearch : new TripSearch(),
+      results: [],
+      searching: true
     };
   }
+
+  componentDidMount() {
+    this.startSearch();
+  }
+
   render() {
+    const results = this.getMatches();
+
     return (
       <div>
         <Progress value={100}/>
-        <Container className={"content-wrapper"}>
-          { this.state.searching ? this.getProgressComponent() : (this.state.complete && this.getMatches() ? <SearchResults matches={this.getMatches()}/> : this.state.currentComponent) }
-        </Container>
+        <div className={"content-scrollable"}>
+          <Container className={"content-wrapper"}>
+            <SearchFilter onValueChange={this.onFilterChange.bind(this)}
+                          initialValueExtractor={() => this.state.tripSearch}>
+            </SearchFilter>
+
+            { this.state.searching ? this.getProgressComponent() : <SearchResults results={results}></SearchResults> }
+          </Container>
+        </div>
       </div>
     );
   }
@@ -35,9 +53,9 @@ class TripSearchResults extends Component<any, any> {
     </div>
   }
 
-  private onFilterChange(filter: TripSearch) {
-    const state = { ...this.state };
-    this.setState(state);
+  private onFilterChange(search: TripSearch) {
+    this.setState({ tripSearch: search });
+    this.startSearch();
   }
 
   private startSearch() {
@@ -45,8 +63,8 @@ class TripSearchResults extends Component<any, any> {
       searching: true
     });
 
-    this.searchService.findMatchingAccommodations(this.state.tripSearchFormValues)
-      .then(res => this.onMatchResult(res))
+    this.searchService.findMatchingAccommodations(this.state.tripSearch)
+      .then(res => this.onMatchResults(res))
       .catch(e => this.setState({
         searching: false
       }))
@@ -55,16 +73,13 @@ class TripSearchResults extends Component<any, any> {
       }));
   }
 
-  private onMatchResult(result: MatchResult) {
-    this.setState({
-      matches: result.accommodationMatches,
-      complete: true
-    });
+  private onMatchResults(results: AccommodationMatch[]) {
+    this.setState({results: results, searching: false})
   }
 
   private getMatches() {
-    return this.state.matches;
+    return this.state.results;
   }
 }
 
-export default TripSearchResults;
+export default withRouter(TripSearchResults);

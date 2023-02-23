@@ -2,8 +2,8 @@ import axios from "axios";
 import Destination from "../../common/model/Destination";
 import Accommodation from "../../common/model/Accommodation";
 import TripSearch from "../../common/model/TripSearch";
-import MatchResult from "../../common/model/MatchResult";
 import TagCategory from "../../common/model/TagCategory";
+import AccommodationMatch from "../../common/model/AccommodationMatch";
 
 const TAG_CATEGORIES = [
   {
@@ -31,6 +31,27 @@ const TAG_CATEGORIES = [
   },
 ];
 
+const MOCK_RESULT =
+  {
+    accommodation: {
+      name: 'Eurostars Book Hotel\n',
+      externalSourceType: 'ZENHOTELS',
+      externalId: '7696138',
+      images: ['https://cdn.worldota.net/t/640x400/content/06/9e/069e6cf3ea97cfbefec441eb2e2fab9bd7614977.jpeg', 'https://cdn.worldota.net/t/240x240/content/f8/1d/f81df4144ecb53ca0ec3b4a7e9607b6a8afa721e.jpeg'],
+      city: 'Munich',
+      country: 'Germany',
+      ratingValue: 8.7,
+      ratingDisplay: 'Hervorragend',
+      reviewCount: 1416,
+      priceLevelDisplay: '$$$',
+      currency: 'EUR',
+      url: 'https://www.zenhotels.com/hotel/germany/munich/mid7696138/eurostars_book_hotel/?q=2452&dates=04.02.2023-05.02.2023&guests=2&price=one&room=s-ff48fdfe-5bc4-52c3-b854-ceccf01d191a&serp_price=eurostars_book_hotel.572.RON.h-c1e98324-2f52-5743-ae73-545c93ac43fd&sid=389b201e-92d5-446c-b12e-f9963bd2c2f1',
+      ratingImageUrl: 'https://www.tripadvisor.com/img/cdsi/img2/ratings/traveler/4.0-18579-5.svg',
+      pricePerNight: 65
+    },
+    score: 0.7
+  };
+
 class SearchApiService {
 
   private http = axios.create({
@@ -51,12 +72,12 @@ class SearchApiService {
       .then(res => res.data);
   }
 
-  findMatchingAccommodations(tripSearch: TripSearch): Promise<MatchResult> {
+  findMatchingAccommodations(tripSearch: TripSearch): Promise<AccommodationMatch[]> {
     const checkinDate = tripSearch.tripTerms?.startDate;
     const checkoutDate = tripSearch.tripTerms?.endDate;
     const request = {
-      destinationId: tripSearch.destination?.externalId,
-      destinationType: tripSearch.destination?.type,
+      destinationId: tripSearch.tripType.destination?.externalId,
+      destinationType: tripSearch.tripType.destination?.type,
       purpose: tripSearch.tripType?.category,
       accommodationSearch: tripSearch.tripType?.accommodation,
       flightSearch: tripSearch.tripType?.flight,
@@ -71,8 +92,16 @@ class SearchApiService {
       previousAccommodationIds: tripSearch.previousLocations?.locations.map(l => l.externalId),
     };
 
-    return this.http.post<MatchResult>("/accommodation/matching", request)
-      .then(res => res.data);
+    //return this.http.post<MatchResult>("/accommodation/matching", request)
+    //  .then(res => res.data);
+
+    const result = [MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT,
+        MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT,
+        MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT, MOCK_RESULT];
+
+    return new Promise((resolveInner) => {
+      setTimeout(() => resolveInner(result), 3000);
+    });
   }
 
   public getTagCategories(): TagCategory[] {

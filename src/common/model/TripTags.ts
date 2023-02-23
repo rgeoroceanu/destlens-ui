@@ -1,5 +1,5 @@
 class TripTags {
-  tags: Set<string> | undefined;
+  tags: Set<string> = new Set<string>([]);
 }
 
 export default TripTags;

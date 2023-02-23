@@ -83,7 +83,7 @@ class PreviousLocationsStep extends Component<any, any> {
       this.state.currentValue.locations[locationIndex] : undefined;
   }
 
-  private handleValueChange(value: Nameable | null, fieldIndex: number) {
+  private handleValueChange(value: Nameable | null | Nameable[], fieldIndex: number) {
     const locations = this.state.currentValue.locations;
     if (locations.length < fieldIndex + 1) {
       locations.push({});

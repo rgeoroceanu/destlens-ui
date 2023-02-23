@@ -8,6 +8,7 @@ import TripSearchDestination from "./wizard/page/trip-search-destination/TripSea
 import TripSearchTerms from "./wizard/page/trip-search-terms/TripSearchTerms";
 import TripSearchTags from "./wizard/page/trip-search-tags/TripSearchTags";
 import TripSearchHistory from "./wizard/page/trip-search-history/TripSearchHistory";
+import TripSearchResults from "./wizard/page/trip-search-results/TripSearchResults";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/trip-search-terms" element={<TripSearchTerms />} />
           <Route path="/trip-search-tags" element={<TripSearchTags />} />
           <Route path="/trip-search-history" element={<TripSearchHistory />} />
+          <Route path="/trip-search-results" element={<TripSearchResults />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

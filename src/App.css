@@ -1,3 +1,12 @@
+html {
+    overflow: hidden;
+}
+
+.content-scrollable {
+    overflow-y: auto;
+    height: calc(100vh - 80px);
+}
+
 .content-wrapper {
     max-width: 1024px;
     padding-top: 20px;

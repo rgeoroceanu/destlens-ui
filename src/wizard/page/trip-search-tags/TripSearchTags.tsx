@@ -7,13 +7,15 @@ import TripSearch from "../../../common/model/TripSearch";
 import {Navigate} from "react-router-dom";
 import TripTags from "../../../common/model/TripTags";
 import TripTagsStep from "../../component/trip-tags-step/TripTagsStep";
+import withRouter from "../../../common/helper/WithRouter";
 
 class TripSearchTags extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
+    const tripSearch = props.location?.state?.tripSearch;
     this.state = {
-      tripSearchFormValues: new TripSearch(),
+      tripSearch: tripSearch ? tripSearch : new TripSearch(),
       next: false,
       previous: false
     };
@@ -22,22 +24,24 @@ class TripSearchTags extends Component<any, any> {
     return (
       <div>
         <Progress value={60}/>
-        <Container className={"content-wrapper"}>
-          <StepNavigation
-            onNext={this.onNextStep.bind(this)}
-            onPrevious={this.onPreviousStep.bind(this)}
-            previousButtonVisible={true}
-            nextButtonVisible={true}
-            nextButtonEnabled={this.isStepValid()}
-            nextButtonColor={"primary"}
-            nextButtonLabel={"Next"}/>
+        <div className={"content-scrollable"}>
+          <Container className={"content-wrapper"}>
+            <StepNavigation
+              onNext={this.onNextStep.bind(this)}
+              onPrevious={this.onPreviousStep.bind(this)}
+              previousButtonVisible={true}
+              nextButtonVisible={true}
+              nextButtonEnabled={this.isStepValid()}
+              nextButtonColor={"primary"}
+              nextButtonLabel={"Next"}/>
 
-          <TripTagsStep onValueChange={this.onTagsValueChange.bind(this)}
-                         initialValueExtractor={() => this.state.tripSearchFormValues.tags}/>
-        </Container>
+            <TripTagsStep onValueChange={this.onTagsValueChange.bind(this)}
+                          initialValueExtractor={() => this.state.tripSearch.tags}/>
+          </Container>
+        </div>
 
-        {this.state.previous ? <Navigate to="/trip-search-terms" replace={true} /> : null}
-        {this.state.next ? <Navigate to="/trip-search-history" replace={true} /> : null}
+        {this.state.previous ? <Navigate to="/trip-search-terms" replace={false} /> : null}
+        {this.state.next ? <Navigate to="/trip-search-history" state={{tripSearch: this.state.tripSearch}} replace={false} /> : null}
       </div>
     );
   }
@@ -52,16 +56,16 @@ class TripSearchTags extends Component<any, any> {
 
   private onTagsValueChange(tags: TripTags) {
     const state = { ...this.state };
-    state.tripSearchFormValues.tags = tags;
+    state.tripSearch.tags = tags;
     this.setState(state);
   }
 
   private isStepValid(): boolean {
-    const terms = this.state.tripSearchFormValues.tags;
+    const terms = this.state.tripSearch.tags;
     //return terms && terms.startDate && terms.endDate && terms.startDate <= terms.endDate
     //  && terms.adults && terms.adults > 0 && terms.rooms && terms.rooms > 0;
     return true;
   }
 }
 
-export default TripSearchTags;
+export default withRouter(TripSearchTags);

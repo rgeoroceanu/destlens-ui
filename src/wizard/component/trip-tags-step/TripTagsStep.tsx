@@ -17,17 +17,13 @@ interface TripTagsStepConfig {
   initialValueExtractor?: () => TripTags
 }
 
-const initialValue: TripTags = {
-  tags: new Set([])
-};
-
 class TripTagsStep extends Component<any, any> {
 
   private searchApiService = new SearchApiService();
 
   constructor(props: TripTagsStepConfig) {
     super(props);
-    const value = props.initialValueExtractor && props.initialValueExtractor() ? props.initialValueExtractor() : initialValue;
+    const value = props.initialValueExtractor && props.initialValueExtractor() ? props.initialValueExtractor() : new TripTags();
     this.state = {
       currentValue: value,
       tabIndex: "0"

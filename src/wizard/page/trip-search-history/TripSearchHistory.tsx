@@ -7,13 +7,15 @@ import TripSearch from "../../../common/model/TripSearch";
 import {Navigate} from "react-router-dom";
 import PreviousLocationsStep from "../../component/previous-locations-step/PreviousLocationsStep";
 import PreviousLocations from "../../../common/model/PreviousLocations";
+import withRouter from "../../../common/helper/WithRouter";
 
 class TripSearchHistory extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
+    const tripSearch = props.location?.state?.tripSearch;
     this.state = {
-      tripSearchFormValues: new TripSearch(),
+      tripSearch: tripSearch ? tripSearch : new TripSearch(),
       next: false
     };
   }
@@ -22,24 +24,26 @@ class TripSearchHistory extends Component<any, any> {
     return (
       <div>
         <Progress value={80}/>
-        <Container className={"content-wrapper"}>
-          <StepNavigation
-            onNext={this.onNextStep.bind(this)}
-            onPrevious={() => {}}
-            previousButtonVisible={false}
-            nextButtonVisible={true}
-            nextButtonEnabled={true}
-            nextButtonColor={this.isPreviousLocationsStepValid() ? "primary" : "inherit"}
-            nextButtonLabel={this.isPreviousLocationsStepValid() ? "Next" : "Skip"}/>
+        <div className={"content-scrollable"}>
+          <Container className={"content-wrapper"}>
+            <StepNavigation
+              onNext={this.onNextStep.bind(this)}
+              onPrevious={() => {}}
+              previousButtonVisible={false}
+              nextButtonVisible={true}
+              nextButtonEnabled={true}
+              nextButtonColor={this.isPreviousLocationsStepValid() ? "primary" : "inherit"}
+              nextButtonLabel={this.isPreviousLocationsStepValid() ? "Next" : "Skip"}/>
 
-          <PreviousLocationsStep onValueChange={this.onPreviousLocationsValueChange.bind(this)}
-                                 initialValueExtractor={() => this.state.tripSearchFormValues.previousLocations ? this.state.tripSearchFormValues.previousLocations : new PreviousLocations()}/>
+            <PreviousLocationsStep onValueChange={this.onPreviousLocationsValueChange.bind(this)}
+                                   initialValueExtractor={() => this.state.tripSearch.previousLocations ? this.state.tripSearch.previousLocations : new PreviousLocations()}/>
 
 
-        </Container>
+          </Container>
+        </div>
 
-        {this.state.previous ? <Navigate to="/trip-search-tags" replace={true} /> : null}
-        {this.state.next ? <Navigate to="/trip-search-results" replace={true} /> : null}
+        {this.state.previous ? <Navigate to="/trip-search-tags" state={{tripSearch: this.state.tripSearch}} replace={false} /> : null}
+        {this.state.next ? <Navigate to="/trip-search-results" state={{tripSearch: this.state.tripSearch}} replace={false} /> : null}
       </div>
     );
   }
@@ -50,7 +54,7 @@ class TripSearchHistory extends Component<any, any> {
 
   private onPreviousLocationsValueChange(previousLocations: PreviousLocations) {
     const state = { ...this.state };
-    state.tripSearchFormValues.previousLocations = previousLocations;
+    state.tripSearch.previousLocations = previousLocations;
     this.setState(state);
   }
 
@@ -59,11 +63,11 @@ class TripSearchHistory extends Component<any, any> {
   }
 
   private getPreviousLocationsCount() {
-    return this.state.tripSearchFormValues.previousLocations
-    && this.state.tripSearchFormValues.previousLocations.locations ?
-      this.state.tripSearchFormValues.previousLocations.locations.length : 0;
+    return this.state.tripSearch.previousLocations
+    && this.state.tripSearch.previousLocations.locations ?
+      this.state.tripSearch.previousLocations.locations.length : 0;
 
   }
 }
 
-export default TripSearchHistory;
+export default withRouter(TripSearchHistory);

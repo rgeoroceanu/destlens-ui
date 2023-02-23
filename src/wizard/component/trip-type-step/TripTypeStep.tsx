@@ -37,7 +37,7 @@ class TripTypeStep extends Component<any, any> {
     this.state = {
       currentValue: value,
       onDestinationSelect: props.onDestinationSelect,
-      specificDestinationEnabled: false
+      specificDestinationEnabled: value?.destination !== undefined
     }
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
     this.onSearchTypeChange = this.onSearchTypeChange.bind(this);
@@ -170,7 +170,7 @@ class TripTypeStep extends Component<any, any> {
     this.props.onValueChange(newValue);
   }
 
-  private onDestinationSelect(destination: Nameable | null) {
+  private onDestinationSelect(destination: Nameable | null | Nameable[]) {
     const newValue = {
       ...this.state.currentValue,
       destination: destination

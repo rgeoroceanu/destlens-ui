@@ -7,13 +7,15 @@ import TripSearch from "../../../common/model/TripSearch";
 import {Navigate} from "react-router-dom";
 import TripTypeStep from "../../component/trip-type-step/TripTypeStep";
 import TripDetails from "../../../common/model/TripDetails";
+import withRouter from "../../../common/helper/WithRouter";
 
 class TripSearchDestination extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
+    const tripSearch = props.location?.state?.tripSearch;
     this.state = {
-      tripSearchFormValues: new TripSearch(),
+      tripSearch: tripSearch ? tripSearch : new TripSearch(),
       next: false
     };
   }
@@ -22,21 +24,23 @@ class TripSearchDestination extends Component<any, any> {
     return (
       <div>
         <Progress value={20}/>
-        <Container className={"content-wrapper"}>
-          <StepNavigation
-            onNext={this.onNextStep.bind(this)}
-            onPrevious={() => {}}
-            previousButtonVisible={false}
-            nextButtonVisible={true}
-            nextButtonEnabled={this.isTypeStepValid()}
-            nextButtonColor={"primary"}
-            nextButtonLabel={"Next"}/>
+        <div className={"content-scrollable"}>
+          <Container className={"content-wrapper"}>
+            <StepNavigation
+              onNext={this.onNextStep.bind(this)}
+              onPrevious={() => {}}
+              previousButtonVisible={false}
+              nextButtonVisible={true}
+              nextButtonEnabled={this.isTypeStepValid()}
+              nextButtonColor={"primary"}
+              nextButtonLabel={"Next"}/>
 
-          <TripTypeStep onValueChange={this.onTripTypeValueChange.bind(this)}
-                        initialValueExtractor={() => this.state.tripSearchFormValues.destination}/>
-        </Container>
+            <TripTypeStep onValueChange={this.onTripTypeValueChange.bind(this)}
+                          initialValueExtractor={() => this.state.tripSearch.tripType}/>
+          </Container>
+        </div>
 
-        {this.state.next ? <Navigate to="/trip-search-terms" replace={true} /> : null}
+        {this.state.next ? <Navigate to="/trip-search-terms" state={{tripSearch: this.state.tripSearch}} replace={false} /> : null}
       </div>
     );
   }
@@ -47,14 +51,14 @@ class TripSearchDestination extends Component<any, any> {
 
   private onTripTypeValueChange(tripType: TripDetails) {
     const state = { ...this.state };
-    state.tripSearchFormValues.tripType = tripType;
+    state.tripSearch.tripType = tripType;
     this.setState(state);
   }
 
   private isTypeStepValid(): boolean {
-    const type = this.state.tripSearchFormValues.tripType;
+    const type = this.state.tripSearch.tripType;
     return type && type.accommodation === true && type.destination && type.destination.name;
   }
 }
 
-export default TripSearchDestination;
+export default withRouter(TripSearchDestination);

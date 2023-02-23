@@ -1,4 +1,4 @@
-enum DestinationType {
+enum PeriodType {
   summer = 'SUMMER',
   spring = 'SPRING',
   autumn = 'AUTUMN',
@@ -6,4 +6,4 @@ enum DestinationType {
   specific = 'SPECIFIC'
 }
 
-export default DestinationType;
+export default PeriodType;

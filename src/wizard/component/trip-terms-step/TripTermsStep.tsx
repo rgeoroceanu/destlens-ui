@@ -9,6 +9,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import {DateRange, DateRangePicker, LocalizationProvider} from '@mui/x-date-pickers-pro';
 import TripTerms from "../../../common/model/TripTerms";
 import PeriodType from "../../../common/model/PeriodType";
+import withRouter from "../../../common/helper/WithRouter";
 
 interface TripTermsStepConfig {
   onValueChange: (value: TripTerms) => void,
@@ -218,4 +219,4 @@ class TripTermsStep extends Component<any, any> {
   };
 }
 
-export default TripTermsStep;
+export default withRouter(TripTermsStep);

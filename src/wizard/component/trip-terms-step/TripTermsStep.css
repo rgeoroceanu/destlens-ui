@@ -1,6 +1,5 @@
 .dates-picker {
     width: 100%;
-    margin-bottom: 40px;
 }
 
 .date-field {
@@ -23,21 +22,47 @@
     margin: 0 !important;
 }
 
-.period-group {
-    margin: 0 auto 40px auto;
+.period-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+.period-delimiter {
+    align-self: center;
+    margin: 0 20px;
+}
+
+.period-group, .duration-group {
+    width: 100%;
+    height: 56px;
+}
+
+.period-item, .duration-item  {
     width: 100%;
 }
 
-.period-item {
-    width: 100%;
+.period-switch-wrapper {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.period-switch-button {
+    margin: 20px 0!important;
+    cursor: pointer;
 }
 
 @media only screen and (max-width: 700px){
-    .period-group {
+    .period-group, .duration-group, .period-wrapper {
         flex-direction: column;
+        height: unset;
     }
 
-    .period-item:not(:first-of-type) {
+    .period-delimiter {
+        margin: 20px 0;
+    }
+
+    .period-item:not(:first-of-type), .duration-item:not(:first-of-type)  {
         margin-top: -1px!important;
         border-top: 1px solid transparent!important;
         border-left: 1px solid rgba(0, 0, 0, 0.12) !important;

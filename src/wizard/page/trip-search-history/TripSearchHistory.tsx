@@ -28,8 +28,8 @@ class TripSearchHistory extends Component<any, any> {
           <Container className={"content-wrapper"}>
             <StepNavigation
               onNext={this.onNextStep.bind(this)}
-              onPrevious={() => {}}
-              previousButtonVisible={false}
+              onPrevious={this.onPreviousStep.bind(this)}
+              previousButtonVisible={true}
               nextButtonVisible={true}
               nextButtonEnabled={true}
               nextButtonColor={this.isPreviousLocationsStepValid() ? "primary" : "inherit"}
@@ -50,6 +50,10 @@ class TripSearchHistory extends Component<any, any> {
 
   private onNextStep() {
     this.setState({ next: true});
+  }
+
+  private onPreviousStep() {
+    this.setState({ previous: true});
   }
 
   private onPreviousLocationsValueChange(previousLocations: PreviousLocations) {

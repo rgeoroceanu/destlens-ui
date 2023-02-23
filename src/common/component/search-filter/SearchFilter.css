@@ -78,7 +78,7 @@
     align-self: center;
 }
 
-.search-filter-type-wrapper {
+.search-filter-type-wrapper, .search-filter-period-wrapper {
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -86,6 +86,10 @@
 
 .search-filter-period-dates {
     font-size: 10px;
+}
+
+.search-filter-link {
+    cursor: pointer;
 }
 
 @media (max-width: 599px) {
@@ -109,6 +113,10 @@
 @media (min-width: 1000px) {
     .search-filter-wrapper {
         grid-template-columns: repeat(4, 1fr);
+    }
+
+    .search-filter-period-wrapper {
+        grid-column: span 2;
     }
 }
 

@@ -63,9 +63,9 @@ class TripSearchTerms extends Component<any, any> {
 
   private isTermsStepValid(): boolean {
     const terms = this.state.tripSearch.tripTerms;
-    //return terms && terms.startDate && terms.endDate && terms.startDate <= terms.endDate
-    //  && terms.adults && terms.adults > 0 && terms.rooms && terms.rooms > 0;
-    return true;
+    return terms && ((terms.startDate && terms.endDate && terms.startDate < terms.endDate)
+        || (terms.period && terms.duration))
+      && terms.adults && terms.adults > 0 && terms.rooms && terms.rooms > 0;
   }
 }
 

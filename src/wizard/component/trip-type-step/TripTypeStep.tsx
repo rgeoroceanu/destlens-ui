@@ -2,7 +2,7 @@ import React, {Component, ReactElement} from 'react';
 import './TripTypeStep.css';
 import EnableSwitch from "../../../common/component/enable-toggle/EnableSwitch";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import {Box, Button, FormGroup, ToggleButton, ToggleButtonGroup} from "@mui/material";
+import {Box, Button, FormGroup, Link, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import TripType from "../../../common/model/TripType";
 import TripDetails from "../../../common/model/TripDetails";
 import SearchInput from "../../../common/component/search-input/SearchInput";
@@ -19,7 +19,7 @@ interface TripTypeStepConfig {
 }
 
 const initialValue: TripDetails = {
-  category: TripType.beach,
+  category: undefined,
   accommodation: true,
   flight: false,
   transfer: false,
@@ -37,7 +37,7 @@ class TripTypeStep extends Component<any, any> {
     this.state = {
       currentValue: value,
       onDestinationSelect: props.onDestinationSelect,
-      specificDestinationEnabled: value?.destination !== undefined
+      specificDestinationEnabled: value.category === undefined
     }
     this.handleCategoryChange = this.handleCategoryChange.bind(this);
     this.onSearchTypeChange = this.onSearchTypeChange.bind(this);
@@ -53,10 +53,10 @@ class TripTypeStep extends Component<any, any> {
         <div className={"section"}>{ this.state.specificDestinationEnabled === false ? 'Purpose' : 'Destination' } </div>
 
         { this.state.specificDestinationEnabled === false ? <ToggleButtonGroup className={"category-group"}
-                           value={this.state.currentValue.category}
-                           exclusive
-                           onChange={this.handleCategoryChange}
-                          aria-label={"category"}>
+                                                                               value={this.state.currentValue.category}
+                                                                               exclusive
+                                                                               onChange={this.handleCategoryChange}
+                                                                               aria-label={"category"}>
           <ToggleButton className={"category-item"}
                         value={TripType.beach}
                         color={"primary"}>
@@ -97,6 +97,11 @@ class TripTypeStep extends Component<any, any> {
                         color={"primary"}>
             Ski
           </ToggleButton>
+          <ToggleButton className={"category-item"}
+                        value={TripType.business}
+                        color={"primary"}>
+            Business
+          </ToggleButton>
         </ToggleButtonGroup> : null }
 
         { this.state.specificDestinationEnabled === true ? <SearchInput
@@ -109,16 +114,15 @@ class TripTypeStep extends Component<any, any> {
           startAdornment={<NearMe className={"destination-value-icon"}/>}/> : null }
 
         <div className={"destination-switch-wrapper"}>
-          <Button className={'destination-switch-button'}
-                  variant={"contained"}
-                  onClick={e => this.toggleDestinationEnableState()}>{this.state.specificDestinationEnabled === false ? 'Or choose destination' : 'Or choose trip type'}
-          </Button>
+          <Link className={'destination-switch-button'}
+                onClick={e => this.toggleDestinationEnableState()}>{this.state.specificDestinationEnabled === false ? 'Or choose destination' : 'I do not know where'}
+          </Link>
         </div>
 
         <div className={"section"}>Search options</div>
         <FormGroup className={"controls-wrapper"}>
           <FormControlLabel className={"control-label"}
-                            control={<EnableSwitch name="accommodation" defaultChecked onChange={this.onSearchTypeChange} value={currentValue.accommodation}/>}
+                            control={<EnableSwitch readOnly={true} name="accommodation" defaultChecked onChange={this.onSearchTypeChange} value={currentValue.accommodation}/>}
                             label="Accommodation"
                             labelPlacement={"start"}/>
           <FormControlLabel className={"control-label"}
@@ -145,13 +149,22 @@ class TripTypeStep extends Component<any, any> {
     this.setState({
       specificDestinationEnabled: !this.state.specificDestinationEnabled
     });
-    this.handleCategoryChange(null, null);
+    const newValue = {
+      ...this.state.currentValue,
+      category: undefined,
+      destination: undefined
+    };
+    this.setState({
+      currentValue: newValue
+    });
+    this.props.onValueChange(newValue);
   }
 
   private handleCategoryChange(event: React.MouseEvent<HTMLElement> | null, newCategory: TripType | null) {
     const newValue = {
       ...this.state.currentValue,
-      category: newCategory
+      category: newCategory,
+      destination: undefined
     };
     this.setState({
       currentValue: newValue
@@ -173,7 +186,8 @@ class TripTypeStep extends Component<any, any> {
   private onDestinationSelect(destination: Nameable | null | Nameable[]) {
     const newValue = {
       ...this.state.currentValue,
-      destination: destination
+      destination: destination,
+      category: undefined
     };
     this.setState({
       currentValue: newValue

@@ -22,11 +22,20 @@
     font-weight: 500;
 }
 
-.search-result-rating-image {
-    margin-right: -6px;
+.search-result-rating {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+.search-result-rating-reviews {
+    font-size: 12px;
+    color: grey;
+    margin-left: 6px;
+}
+
+.search-result-rating-image {
+    margin-right: -6px;
 }
 
 .search-result-image-container {
@@ -43,5 +52,5 @@
 }
 
 .search-result-wrapper:hover {
-    border: 1px solid grey;
+    border: 1px solid #e0e0e0;
 }

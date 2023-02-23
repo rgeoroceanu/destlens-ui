@@ -20,7 +20,7 @@ function Header() {
   return (
     <header className="header">
       <div className="header-wrapper">
-        <a className="header-logo" href="https://tripwizard.io" target="_blank" rel="noopener noreferrer">
+        <a className="header-logo" href="/" rel="noopener noreferrer">
           <img src={logo} alt="logo" />
         </a>
         <IconButton className={"header-menu-button"} onClick={handleOpenUserMenu} color={"primary"}>

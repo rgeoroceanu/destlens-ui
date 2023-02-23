@@ -2,7 +2,7 @@ import TripType from "./TripType";
 import Destination from "./Destination";
 
 class TripDetails {
-  category: TripType = TripType.beach;
+  category: TripType | undefined = undefined;
   accommodation: boolean = true;
   flight: boolean = false;
   transfer: boolean = false;

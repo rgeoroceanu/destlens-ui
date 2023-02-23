@@ -21,6 +21,7 @@ class TripSearchDestination extends Component<any, any> {
   }
 
   render() {
+    const isStepValid = this.isTypeStepValid();
     return (
       <div>
         <Progress value={20}/>
@@ -31,12 +32,12 @@ class TripSearchDestination extends Component<any, any> {
               onPrevious={() => {}}
               previousButtonVisible={false}
               nextButtonVisible={true}
-              nextButtonEnabled={this.isTypeStepValid()}
+              nextButtonEnabled={isStepValid}
               nextButtonColor={"primary"}
               nextButtonLabel={"Next"}/>
 
             <TripTypeStep onValueChange={this.onTripTypeValueChange.bind(this)}
-                          initialValueExtractor={() => this.state.tripSearch.tripType}/>
+                          initialValueExtractor={() => this.state.tripSearch.tripDetails}/>
           </Container>
         </div>
 
@@ -49,15 +50,17 @@ class TripSearchDestination extends Component<any, any> {
     this.setState({ next: true});
   }
 
-  private onTripTypeValueChange(tripType: TripDetails) {
+  private onTripTypeValueChange(tripDetails: TripDetails) {
     const state = { ...this.state };
-    state.tripSearch.tripType = tripType;
+    state.tripSearch.tripDetails = tripDetails;
     this.setState(state);
   }
 
   private isTypeStepValid(): boolean {
-    const type = this.state.tripSearch.tripType;
-    return type && type.accommodation === true && type.destination && type.destination.name;
+    const type = this.state.tripSearch.tripDetails;
+    return type && type.accommodation === true
+      && ((type.destination !== undefined && type.destination.name)
+      || (type.category));
   }
 }
 

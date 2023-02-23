@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import './TripTermsStep.css';
 import {AdapterDayjs} from '@mui/x-date-pickers-pro/AdapterDayjs';
 import TextField from "@mui/material/TextField";
-import {Box, InputAdornment, ToggleButton, ToggleButtonGroup} from "@mui/material";
+import {Box, InputAdornment, Link, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import {CalendarMonth} from "@mui/icons-material";
 import NumberInput from "../../../common/component/number-input/NumberInput";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -10,29 +10,25 @@ import {DateRange, DateRangePicker, LocalizationProvider} from '@mui/x-date-pick
 import TripTerms from "../../../common/model/TripTerms";
 import PeriodType from "../../../common/model/PeriodType";
 import withRouter from "../../../common/helper/WithRouter";
+import DurationType from "../../../common/model/DurationType";
+
+const initialStartDate = new Date();
+const initialEndDate = new Date();
+initialEndDate.setDate(initialStartDate.getDate() + 1);
 
 interface TripTermsStepConfig {
   onValueChange: (value: TripTerms) => void,
   initialValueExtractor?: () => TripTerms
 }
 
-const initialValue: TripTerms = {
-  period: PeriodType.summer,
-  startDate: null,
-  endDate: null,
-  adults: 2,
-  children: 0,
-  childrenAges: [],
-  rooms: 1,
-};
-
 class TripTermsStep extends Component<any, any> {
 
   constructor(props: TripTermsStepConfig) {
     super(props);
-    const value = props.initialValueExtractor && props.initialValueExtractor() ? props.initialValueExtractor() : initialValue;
+    const value = props.initialValueExtractor && props.initialValueExtractor() ? props.initialValueExtractor() : new TripTerms();
     this.state = {
-      currentValue: value
+      currentValue: value,
+      isSpecificPeriod: value.period === undefined
     }
     this.props.onValueChange(value);
   }
@@ -44,39 +40,61 @@ class TripTermsStep extends Component<any, any> {
         <div className={"subtitle"}>Select period and companions</div>
 
         <div className={"section"}>Period</div>
-        <ToggleButtonGroup className={"period-group"}
-                           value={this.state.currentValue.period}
-                           exclusive
-                           onChange={this.handlePeriodChange.bind(this)}
-                           aria-label={"period"}>
-          <ToggleButton className={"period-item"}
-                        value={PeriodType.summer}
-                        color={"primary"}>
-            Summer
-          </ToggleButton>
-          <ToggleButton className={"period-item"}
-                        value={PeriodType.autumn}
-                        color={"primary"}>
-            Autumn
-          </ToggleButton>
-          <ToggleButton className={"period-item"}
-                        value={PeriodType.winter}
-                        color={"primary"}>
-            Winter
-          </ToggleButton>
-          <ToggleButton className={"period-item"}
-                        value={PeriodType.spring}
-                        color={"primary"}>
-            Spring
-          </ToggleButton>
-          <ToggleButton className={"period-item"}
-                        value={PeriodType.specific}
-                        color={"primary"}>
-            Specific
-          </ToggleButton>
-        </ToggleButtonGroup>
+        { this.state.isSpecificPeriod === false ?
+          <div className={"period-wrapper"}>
+            <ToggleButtonGroup className={"duration-group"}
+                               value={this.state.currentValue.duration}
+                               exclusive
+                               onChange={this.handleDurationChange.bind(this)}
+                               aria-label={"duration"}>
+              <ToggleButton className={"duration-item"}
+                            value={DurationType.weekend}
+                            color={"primary"}>
+                One weekend
+              </ToggleButton>
+              <ToggleButton className={"duration-item"}
+                            value={DurationType.week}
+                            color={"primary"}>
+                One week
+              </ToggleButton>
+              <ToggleButton className={"duration-item"}
+                            value={DurationType.month}
+                            color={"primary"}>
+                One month
+              </ToggleButton>
+            </ToggleButtonGroup>
 
-        { this.state.currentValue.period === PeriodType.specific ? <LocalizationProvider
+            <span className={"period-delimiter"}>in</span>
+
+            <ToggleButtonGroup className={"period-group"}
+                               value={this.state.currentValue.period}
+                               exclusive
+                               onChange={this.handlePeriodChange.bind(this)}
+                               aria-label={"period"}>
+              <ToggleButton className={"period-item"}
+                            value={PeriodType.summer}
+                            color={"primary"}>
+                Summer
+              </ToggleButton>
+              <ToggleButton className={"period-item"}
+                            value={PeriodType.autumn}
+                            color={"primary"}>
+                Autumn
+              </ToggleButton>
+              <ToggleButton className={"period-item"}
+                            value={PeriodType.winter}
+                            color={"primary"}>
+                Winter
+              </ToggleButton>
+              <ToggleButton className={"period-item"}
+                            value={PeriodType.spring}
+                            color={"primary"}>
+                Spring
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </div> : null }
+
+        { this.state.isSpecificPeriod ? <LocalizationProvider
           dateAdapter={AdapterDayjs}
           localeText={{ start: 'Check-in', end: 'Check-out' }}>
           <DateRangePicker
@@ -122,6 +140,13 @@ class TripTermsStep extends Component<any, any> {
           />
         </LocalizationProvider> : null }
 
+        <div className={"period-switch-wrapper"}>
+          <Link className={'period-switch-button'}
+                onClick={e => this.togglePeriodEnableState()}>{this.state.isSpecificPeriod === false ? 'Or choose dates' : 'I do not know when'}
+          </Link>
+        </div>
+
+
         <div className={"section"}>Who's traveling?</div>
         <div className={"controls-wrapper"}>
           <FormControlLabel className={"control-label"}
@@ -144,6 +169,22 @@ class TripTermsStep extends Component<any, any> {
 
       </div>
     );
+  }
+
+  private togglePeriodEnableState() {
+    this.setState({
+      isSpecificPeriod: !this.state.isSpecificPeriod
+    });
+    const newValue = {
+      ...this.state.currentValue,
+      startDate: null,
+      endDate: null,
+      period: undefined
+    };
+    this.setState({
+      currentValue: newValue
+    });
+    this.props.onValueChange(newValue);
   }
 
   private getChildrenAgeFields() {
@@ -211,6 +252,17 @@ class TripTermsStep extends Component<any, any> {
     const newValue = {
       ...this.state.currentValue,
       period: newPeriod
+    };
+    this.setState({
+      currentValue: newValue
+    });
+    this.props.onValueChange(newValue);
+  };
+
+  handleDurationChange(event: React.MouseEvent<HTMLElement> | null, newDuration: DurationType | null) {
+    const newValue = {
+      ...this.state.currentValue,
+      duration: newDuration
     };
     this.setState({
       currentValue: newValue

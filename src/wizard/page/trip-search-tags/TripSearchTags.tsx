@@ -31,9 +31,9 @@ class TripSearchTags extends Component<any, any> {
               onPrevious={this.onPreviousStep.bind(this)}
               previousButtonVisible={true}
               nextButtonVisible={true}
-              nextButtonEnabled={this.isStepValid()}
-              nextButtonColor={"primary"}
-              nextButtonLabel={"Next"}/>
+              nextButtonEnabled={true}
+              nextButtonColor={this.isStepValid() ? "primary" : "inherit"}
+              nextButtonLabel={this.isStepValid() ? "Next" : "Skip"}/>
 
             <TripTagsStep onValueChange={this.onTagsValueChange.bind(this)}
                           initialValueExtractor={() => this.state.tripSearch.tags}/>
@@ -61,10 +61,8 @@ class TripSearchTags extends Component<any, any> {
   }
 
   private isStepValid(): boolean {
-    const terms = this.state.tripSearch.tags;
-    //return terms && terms.startDate && terms.endDate && terms.startDate <= terms.endDate
-    //  && terms.adults && terms.adults > 0 && terms.rooms && terms.rooms > 0;
-    return true;
+    const tags = this.state.tripSearch.tags;
+    return tags && tags.tags &&  Array.from(tags.tags).length > 0;
   }
 }
 

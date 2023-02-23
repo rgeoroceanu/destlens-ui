@@ -76,13 +76,13 @@ class SearchApiService {
     const checkinDate = tripSearch.tripTerms?.startDate;
     const checkoutDate = tripSearch.tripTerms?.endDate;
     const request = {
-      destinationId: tripSearch.tripType.destination?.externalId,
-      destinationType: tripSearch.tripType.destination?.type,
-      purpose: tripSearch.tripType?.category,
-      accommodationSearch: tripSearch.tripType?.accommodation,
-      flightSearch: tripSearch.tripType?.flight,
-      transferSearch: tripSearch.tripType?.transfer,
-      carRentalSearch: tripSearch.tripType?.carRental,
+      destinationId: tripSearch.tripDetails.destination?.externalId,
+      destinationType: tripSearch.tripDetails.destination?.type,
+      purpose: tripSearch.tripDetails?.category,
+      accommodationSearch: tripSearch.tripDetails?.accommodation,
+      flightSearch: tripSearch.tripDetails?.flight,
+      transferSearch: tripSearch.tripDetails?.transfer,
+      carRentalSearch: tripSearch.tripDetails?.carRental,
       checkinDate: this.formatDate(checkinDate),
       checkoutDate: this.formatDate(checkoutDate),
       adults: tripSearch.tripTerms?.adults,

@@ -16,7 +16,7 @@ interface StepNavigationRoutes {
 }
 
 function StepNavigation({onPrevious, onNext, previousButtonVisible = true, nextButtonVisible = false,
-                          nextButtonEnabled = true, nextButtonLabel = 'Next', nextButtonColor = "primary"}: StepNavigationRoutes) {
+                          nextButtonEnabled = false, nextButtonLabel = 'Next', nextButtonColor = "primary"}: StepNavigationRoutes) {
   return (
     <div className={"navigation-wrapper"}>
       {previousButtonVisible ?

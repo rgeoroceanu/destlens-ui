@@ -1,0 +1,20 @@
+.chat-wrapper {
+    border: 1px solid rgb(0 0 0 / 5%);
+    border-radius: 10px;
+    padding: 20px;
+    height: calc(100vh - 150px);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex-grow: 1;
+}
+
+.chat-write-field {
+    width: 100%;
+}
+
+.chat-write-field {
+    width: 100%;
+}

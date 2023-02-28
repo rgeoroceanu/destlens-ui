@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ReactElement, useCallback} from 'react';
+import {KeyboardEventHandler, ReactElement, useCallback} from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -18,6 +18,7 @@ interface SearchInputConfig {
   multiple?: boolean;
   size?: "medium" | "small" | undefined;
   label?: string;
+  keyDownHandler?: KeyboardEventHandler<HTMLDivElement> | undefined;
 }
 
 export const searchAsync = (query: string, searchFunction: any): Promise<Nameable[]> => {
@@ -31,7 +32,7 @@ export const searchAsync = (query: string, searchFunction: any): Promise<Nameabl
 };
 
 function SearchInput({searchFunction, className = '', onValueChange, currentValue = null, initialOptions = [],
-                       optionComponentGenerator, startAdornment, multiple = false, size = "medium", label = "Search"}: SearchInputConfig) {
+                       optionComponentGenerator, startAdornment, multiple = false, size = "medium", label, keyDownHandler}: SearchInputConfig) {
 
   const defaultValue = currentValue === null ? (multiple ? [] : {name: ''}) : currentValue;
   const [options, setOptions] = React.useState<readonly Nameable[]>(initialOptions);
@@ -89,6 +90,7 @@ function SearchInput({searchFunction, className = '', onValueChange, currentValu
   return (
     <Autocomplete className={"search-input " + className}
                   size={size}
+                  autoHighlight={true}
                   id="search-input"
                   sx={{ width: 300 }}
                   multiple={multiple}
@@ -102,10 +104,10 @@ function SearchInput({searchFunction, className = '', onValueChange, currentValu
                   getOptionLabel={(option) => option.name}
                   options={options}
                   loading={loading}
-                  autoHighlight
                   renderOption={(props, option) => renderOption(optionComponentGenerator, props, option)}
                   renderInput={(params) => (
                     <TextField
+                      onKeyDownCapture={keyDownHandler}
                       variant={"outlined"}
                       className={"search-input-text"}
                       {...params}

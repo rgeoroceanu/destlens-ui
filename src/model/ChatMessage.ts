@@ -3,7 +3,11 @@ import ChatParticipant from "./ChatParticipant";
 class ChatMessage {
   own: boolean = true;
   text: string = '';
-  sender: ChatParticipant | null = null;
+
+  constructor(own: boolean, text: string) {
+    this.own = own;
+    this.text = text;
+  }
 }
 
 export default ChatMessage;

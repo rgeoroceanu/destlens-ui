@@ -2,43 +2,56 @@ import React, {Component} from 'react';
 import './Chat.css';
 import ChatMessage from "../../model/ChatMessage";
 import TextField from "@mui/material/TextField";
-import ChatThread from "../../model/ChatThread";
-
-interface ChatInput {
-  thread: ChatThread
-}
+import {Send} from "@mui/icons-material";
+import {TypeAnimation} from "react-type-animation";
+import {IconButton} from "@mui/material";
 
 class Chat extends Component<any, any> {
 
-  constructor(props: ChatInput) {
-    super(props);
-    this.state = {
-      thread: props.thread
-    };
-  }
-
   render() {
-    console.log(this.state.thread.messages)
+    const component = this.props.inputComponent ? this.props.inputComponent : this.getDefaultInputComponent();
+    const loading = this.props.loading ? this.props.loading : false;
+    const sendClickListener = this.props.sendClickListener ? this.props.sendClickListener : undefined;
     return (
       <div className={"chat-wrapper"}>
-        { this.getMessagesComponent(this.state.thread.messages) }
+        { this.getMessagesComponent(this.props.thread.messages, loading) }
         <div className={"chat-write-wrapper"}>
-          <TextField className={"chat-write-field"}>
-
-          </TextField>
+          {component}
+          <IconButton
+            onClick={sendClickListener}
+            color="primary"
+            className={"chat-write-button"}>
+            <Send className={"chat-write-icon"}></Send>
+          </IconButton>
         </div>
       </div>
     );
   }
 
-  private getMessagesComponent(messages: ChatMessage[]) {
+  private getDefaultInputComponent() {
+    return <TextField className={"chat-write-field"}></TextField>;
+  }
+
+  private getMessagesComponent(messages: ChatMessage[], loading: boolean) {
     return <div className={"chat-messages"}>
-      { messages.map(m => this.getMessageComponent(m)) }
+      { messages.map((m, i) => this.getMessageComponent(m, i)) }
+      { loading ? this.getTypingAnimation() : null}
     </div>
   }
 
-  private getMessageComponent(message: ChatMessage) {
-    return <div className={"chat-message " + message.own ? "chat-message-own" : "chat-message-another"}>
+  private getTypingAnimation() {
+    return <div className={"chat-message chat-message-another"}>
+      <TypeAnimation
+        sequence={['.', 200, '..', 300, '...', 400, () => {}]}
+        wrapper="div"
+        cursor={false}
+        repeat={Infinity}
+        style={{ textAlign: 'right', fontSize: '1.5em' }}
+      /></div>
+  }
+
+  private getMessageComponent(message: ChatMessage, index: number) {
+    return <div key={"chat-message" + index} className={"chat-message " + (message.own ? "chat-message-own" : "chat-message-another")}>
       {message.text}
     </div>
   }

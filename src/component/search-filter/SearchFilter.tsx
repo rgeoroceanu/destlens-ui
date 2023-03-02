@@ -16,7 +16,7 @@ import {
 import TripSearch from "../../model/TripSearch";
 import TripType from "../../model/TripType";
 import PeriodType from "../../model/PeriodType";
-import CompanionsSelect from "../companions-select/CompanionsSelect";
+import SearchFilterCompanionsSelect from "../search-filter-companions-select/SearchFilterCompanionsSelect";
 import TripTerms from "../../model/TripTerms";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -224,11 +224,11 @@ class SearchFilter extends Component<any, any> {
           currentValue={this.state.previousLocations?.locations}
           startAdornment={<Hotel className={"location-start-icon"}/>}></SearchInput>
 
-        <CompanionsSelect
+        <SearchFilterCompanionsSelect
           className={"search-filter-companions"}
           onValueChange={this.handleCompanionsChange.bind(this)}
           initialValueExtractor={() => this.state.currentValue?.tripTerms}>
-        </CompanionsSelect>
+        </SearchFilterCompanionsSelect>
 
         <Button
           className={"search-filter-apply"}

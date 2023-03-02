@@ -1,3 +1,14 @@
 .search-assistant-step-component {
     flex-grow: 1;
 }
+
+.search-assistant-companions-wrapper {
+    width: 100%;
+    position: absolute;
+    bottom: 80px;
+}
+
+.search-assistant-companions-select {
+    margin-left: auto;
+    margin-right: auto;
+}

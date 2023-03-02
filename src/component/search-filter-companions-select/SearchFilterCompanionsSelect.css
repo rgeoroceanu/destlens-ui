@@ -1,0 +1,29 @@
+.search-filter-companions-select-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-filter-companions-select-child-age-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.search-filter-companions-select-adults {
+    width: 70px!important;
+}
+
+.search-filter-companions-select-rooms {
+    width: 70px!important;
+}
+
+.search-filter-companions-select-children {
+    width: 70px!important;
+}
+
+.search-filter-companion-select-add-child {
+    min-width: 40px !important;
+    height: 40px !important;
+}

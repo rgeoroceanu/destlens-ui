@@ -2,9 +2,9 @@ import React, {Component} from 'react';
 import './Chat.css';
 import ChatMessage from "../../model/ChatMessage";
 import TextField from "@mui/material/TextField";
-import {Send} from "@mui/icons-material";
+import {FastRewind, Refresh, Send} from "@mui/icons-material";
 import {TypeAnimation} from "react-type-animation";
-import {IconButton} from "@mui/material";
+import {Button, IconButton} from "@mui/material";
 
 class Chat extends Component<any, any> {
 
@@ -12,9 +12,21 @@ class Chat extends Component<any, any> {
     const component = this.props.inputComponent ? this.props.inputComponent : this.getDefaultInputComponent();
     const loading = this.props.loading ? this.props.loading : false;
     const sendClickListener = this.props.sendClickListener ? this.props.sendClickListener : undefined;
+    const restartClickListener = this.props.restartClickListener ? this.props.restartClickListener : undefined;
+    const previousClickListener = this.props.previousClickListener ? this.props.previousClickListener : undefined;
     return (
       <div className={"chat-wrapper"}>
         { this.getMessagesComponent(this.props.thread.messages, loading) }
+        {
+          <div className={"chat-state-buttons-wrapper"}>
+            <Button onClick={restartClickListener} size="small" color="primary" className={"chat-state-button"} variant="outlined" startIcon={<Refresh />}>
+              Restart
+            </Button>
+            <Button onClick={previousClickListener} size="small" color="primary" className={"chat-state-button"} variant="outlined" startIcon={<FastRewind />}>
+              Previous
+            </Button>
+          </div>
+        }
         <div className={"chat-write-wrapper"}>
           {component}
           <IconButton
@@ -28,30 +40,40 @@ class Chat extends Component<any, any> {
     );
   }
 
+  componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any) {
+    const messagesWrapper = document.getElementById("chat-messages");
+    if (messagesWrapper) {
+      messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
+    }
+  }
+
   private getDefaultInputComponent() {
     return <TextField className={"chat-write-field"}></TextField>;
   }
 
   private getMessagesComponent(messages: ChatMessage[], loading: boolean) {
-    return <div className={"chat-messages"}>
-      { messages.map((m, i) => this.getMessageComponent(m, i)) }
+    const messsageComponents = messages.map((m, i) => this.getMessageComponent(m, i));
+    return <div id="chat-messages" className={"chat-messages"}>
+      { messsageComponents }
       { loading ? this.getTypingAnimation() : null}
-    </div>
+    </div>;
   }
 
   private getTypingAnimation() {
-    return <div className={"chat-message chat-message-another"}>
-      <TypeAnimation
-        sequence={['.', 200, '..', 300, '...', 400, () => {}]}
+    return <TypeAnimation
+        sequence={['.  ', 100, '.. ', 200, '...', 400, () => {}]}
         wrapper="div"
         cursor={false}
         repeat={Infinity}
+        className={"chat-loading"}
         style={{ textAlign: 'right', fontSize: '1.5em' }}
-      /></div>
+      />;
   }
 
   private getMessageComponent(message: ChatMessage, index: number) {
-    return <div key={"chat-message" + index} className={"chat-message " + (message.own ? "chat-message-own" : "chat-message-another")}>
+    return <div id={"chat-message-" + index}
+                key={"chat-message-" + index}
+                className={"chat-message " + (message.own ? "chat-message-own" : "chat-message-another")}>
       {message.text}
     </div>
   }

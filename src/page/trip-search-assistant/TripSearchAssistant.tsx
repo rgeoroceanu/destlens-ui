@@ -24,6 +24,7 @@ import {DateRange} from "@mui/lab";
 import CompanionsSelect from "../../component/companions-select/CompanionsSelect";
 import TripTerms from "../../model/TripTerms";
 import Accommodation from "../../model/Accommodation";
+import {Navigate} from "react-router-dom";
 
 const SEARCH_TYPE_OPTIONS = ["Accommodation", "Flight", "Transfer", "Car Rental"];
 
@@ -46,7 +47,9 @@ class TripSearchAssistant extends Component<any, any> {
           inputComponent={component}
           sendClickListener={() => this.handleSubmitAnswer()}
           restartClickListener={() => this.handleRestart()}
-          previousClickListener={() => this.handlePrevious()}>
+          previousClickListener={() => this.handlePrevious()}
+          skipClickListener={() => this.handleSkip()}
+          skipButtonVisible={this.state.currentStep===SearchAssistantStep.tags_select || this.state.currentStep===SearchAssistantStep.previous_locations_select }>
         </Chat>
       </Container>
     );
@@ -117,6 +120,19 @@ class TripSearchAssistant extends Component<any, any> {
       this.addAssistantQuestion(previousStep);
       this.setState({ currentInputValue: undefined, currentStep: previousStep, thread: thread, loadingQuestion: false });
     }, 1000);
+  }
+
+  private handleSkip() {
+    this.setState({ currentInputValue: undefined });
+    this.addAnswer('(Step skipped)');
+    switch (this.state.currentStep) {
+      case SearchAssistantStep.tags_select:
+        this.setState({ currentStep: SearchAssistantStep.previous_locations_select});
+        break;
+      default:
+        this.setState({ currentStep: SearchAssistantStep.complete});
+    }
+
   }
 
   private handleSubmitAnswer() {
@@ -194,6 +210,8 @@ class TripSearchAssistant extends Component<any, any> {
         return "Now let's select some thing that you like most about the locations where you have been before.";
       case SearchAssistantStep.previous_locations_select:
         return "Previous locations";
+      case SearchAssistantStep.complete:
+        return "Congrats! You completed all the steps! Now I will find something suitable just for you!";
       default:
         return "";
     }
@@ -368,7 +386,9 @@ class TripSearchAssistant extends Component<any, any> {
           initialOptions={this.state.previousLocations?.locations ? this.state.previousLocations?.locations : []}
           className={"search-assistant-step-component"}
           optionComponentGenerator={(props, option) => this.generateLocationOption(props, option as Accommodation)}
-          startAdornment={<Hotel className={"location-start-icon"}/>}></SearchInput>
+          startAdornment={<Hotel className={"location-start-icon"}/>}></SearchInput>;
+      case SearchAssistantStep.complete:
+        return <Navigate to="/trip-search-results" state={{tripSearch: this.state.tripSearch}} replace={false} />
       default:
         return undefined;
     }

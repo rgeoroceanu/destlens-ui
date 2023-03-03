@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import './Chat.css';
 import ChatMessage from "../../model/ChatMessage";
 import TextField from "@mui/material/TextField";
-import {FastRewind, Refresh, Send} from "@mui/icons-material";
+import {FastForward, FastRewind, Refresh, Send, SkipNext} from "@mui/icons-material";
 import {TypeAnimation} from "react-type-animation";
 import {Button, IconButton} from "@mui/material";
 
@@ -14,17 +14,34 @@ class Chat extends Component<any, any> {
     const sendClickListener = this.props.sendClickListener ? this.props.sendClickListener : undefined;
     const restartClickListener = this.props.restartClickListener ? this.props.restartClickListener : undefined;
     const previousClickListener = this.props.previousClickListener ? this.props.previousClickListener : undefined;
+    const skipClickListener = this.props.skipClickListener ? this.props.skipClickListener : undefined;
+    const skipButtonVisible = this.props.skipButtonVisible;
     return (
       <div className={"chat-wrapper"}>
         { this.getMessagesComponent(this.props.thread.messages, loading) }
         {
           <div className={"chat-state-buttons-wrapper"}>
-            <Button onClick={restartClickListener} size="small" color="primary" className={"chat-state-button"} variant="outlined" startIcon={<Refresh />}>
+            { restartClickListener ? <Button onClick={restartClickListener}
+                                             color="primary"
+                                             className={"chat-state-button"}
+                                             variant="outlined"
+                                             startIcon={<Refresh />}>
               Restart
-            </Button>
-            <Button onClick={previousClickListener} size="small" color="primary" className={"chat-state-button"} variant="outlined" startIcon={<FastRewind />}>
+            </Button> : null }
+            { previousClickListener ? <Button onClick={previousClickListener}
+                                              color="primary"
+                                              className={"chat-state-button"}
+                                              variant="outlined"
+                                              startIcon={<FastRewind />}>
               Previous
-            </Button>
+            </Button> : null }
+            { skipClickListener && skipButtonVisible ? <Button onClick={skipClickListener}
+                                              color="primary"
+                                              className={"chat-state-button"}
+                                              variant="outlined"
+                                              startIcon={<SkipNext />}>
+              Skip
+            </Button> : null }
           </div>
         }
         <div className={"chat-write-wrapper"}>
@@ -61,13 +78,13 @@ class Chat extends Component<any, any> {
 
   private getTypingAnimation() {
     return <TypeAnimation
-        sequence={['.  ', 100, '.. ', 200, '...', 400, () => {}]}
-        wrapper="div"
-        cursor={false}
-        repeat={Infinity}
-        className={"chat-loading"}
-        style={{ textAlign: 'right', fontSize: '1.5em' }}
-      />;
+      sequence={['.  ', 100, '.. ', 200, '...', 400, () => {}]}
+      wrapper="div"
+      cursor={false}
+      repeat={Infinity}
+      className={"chat-loading"}
+      style={{ textAlign: 'right', fontSize: '1.5em' }}
+    />;
   }
 
   private getMessageComponent(message: ChatMessage, index: number) {

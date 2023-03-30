@@ -65,9 +65,6 @@ class TripSearchResults extends Component<any, any> {
 
     this.searchService.findMatchingAccommodations(this.state.tripSearch)
       .then(res => this.onMatchResults(res))
-      .catch(e => this.setState({
-        searching: false
-      }))
       .finally(() => this.setState({
         searching: false
       }));

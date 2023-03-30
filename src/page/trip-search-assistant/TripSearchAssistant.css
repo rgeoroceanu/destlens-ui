@@ -12,3 +12,8 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.react-datepicker-popper {
+    inset: auto auto 80px calc(50% - 120px) !important;
+    transform: unset !important;
+}

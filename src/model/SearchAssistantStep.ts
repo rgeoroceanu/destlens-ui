@@ -2,7 +2,7 @@ enum SearchAssistantStep {
   destination_known_select,
   destination_select,
   type_select,
-  search_options,
+  //search_options,
   period_known_select,
   period_duration_select,
   period_season_select,

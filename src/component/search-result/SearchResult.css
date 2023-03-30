@@ -14,11 +14,20 @@
 .search-result-title {
     font-size: 16px;
     font-weight: 500;
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .search-result-subtitle {
     font-size: 14px;
     color: grey;
+    font-weight: 500;
+}
+
+.search-result-price {
+    font-size: 14px;
     font-weight: 500;
 }
 
@@ -42,6 +51,11 @@
     display: flex;
     width: 100%;
     overflow: hidden;
+    position: relative;
+}
+
+.search-result-image-container:hover {
+    opacity: 0.9;
 }
 
 .search-result-image {
@@ -49,6 +63,24 @@
     border-radius: 10px;
     width: 100%;
     object-fit: cover;
+}
+
+.search-result-image-next {
+    position: absolute!important;
+    top: calc(50% - 20px);
+    right: 5px;
+    background-color: rgba(240, 240, 240, 0.2) !important;
+}
+
+.search-result-image-previous {
+    position: absolute!important;
+    top: calc(50% - 20px);
+    left: 5px;
+    background-color: rgba(240, 240, 240, 0.2) !important;
+}
+
+.search-result-image-next:hover, .search-result-image-previous:hover {
+    background-color: rgba(240, 240, 240, 0.8) !important;
 }
 
 .search-result-wrapper:hover {

@@ -6,8 +6,7 @@ enum TripType {
   road_trip = 'ROADTRIP',
   sightseeing = 'SIGHTSEEING',
   mountain = "MOUNTAIN",
-  ski = "SKI",
-  business = "BUSINESS"
+  ski = "SKI"
 }
 
 export default TripType;

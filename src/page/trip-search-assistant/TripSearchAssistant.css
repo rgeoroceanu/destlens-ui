@@ -13,7 +13,20 @@
     margin-right: auto;
 }
 
-.react-datepicker-popper {
+.search-assistant-dates-select {
     inset: auto auto 80px calc(50% - 120px) !important;
     transform: unset !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+    background-color: rgba(1, 170, 193, 0.1) !important;
+}
+
+.react-datepicker__day--selected, .react-datepicker__day--in-range, .react-datepicker__day--in-selecting-range,
+.react-datepicker__day--selecting-range-start .react-datepicker__day--selecting-range-end {
+    background-color: #01aac1 !important;
+}
+
+.react-datepicker__header {
+    background-color: transparent;
 }

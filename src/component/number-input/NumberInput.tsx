@@ -6,6 +6,7 @@ import {Add, Remove} from "@mui/icons-material";
 interface NumberInputConfig {
   defaultValue: number;
   onValueChange: (event: number) => void;
+  max?: number;
 }
 
 function NumberInput(config: NumberInputConfig) {
@@ -15,7 +16,7 @@ function NumberInput(config: NumberInputConfig) {
     config.onValueChange(value);
   };
   const onHandleIncrement = () => {
-    const newValue = Math.min(value + 1, 100);
+    const newValue = Math.min(value + 1, config.max ? config.max : 100);
     onValueChange(newValue);
   };
   const onHandleDecrement = () => {

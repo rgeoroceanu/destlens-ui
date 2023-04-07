@@ -13,11 +13,11 @@
 }
 
 .search-filter-tags {
-    grid-column: span 1;
+    grid-column: span 1.5;
 }
 
 .search-filter-previous-locations {
-    grid-column: span 1;
+    grid-column: span 1.5;
 }
 
 .location-start-icon {
@@ -69,8 +69,20 @@
     height: 20px!important;
 }
 
-.companions-select-wrapper{
+.search-filter-companions-wrapper {
     grid-column: span 1;
+    position: relative;
+    width: 100%;
+}
+
+.search-filter-companions-select {
+    position: absolute;
+    inset: 50px auto auto;
+    z-index: 10;
+}
+
+.search-filter-companions {
+    width: 100%;
 }
 
 .search-filter-apply {
@@ -82,6 +94,12 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+}
+
+.search-filter-period-unknown-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
 }
 
 .search-filter-period-dates {
@@ -113,6 +131,10 @@
 @media (min-width: 1000px) {
     .search-filter-wrapper {
         grid-template-columns: repeat(4, 1fr);
+    }
+
+    .search-filter-previous-locations {
+        grid-column: span 2;
     }
 
     .search-filter-period-wrapper {

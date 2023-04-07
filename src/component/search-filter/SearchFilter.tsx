@@ -4,7 +4,6 @@ import {Box, Button, FormControl, InputLabel, Link, MenuItem, Select} from "@mui
 import TripSearch from "../../model/TripSearch";
 import TripType from "../../model/TripType";
 import PeriodType from "../../model/PeriodType";
-import SearchFilterCompanionsSelect from "../search-filter-companions-select/SearchFilterCompanionsSelect";
 import TripTerms from "../../model/TripTerms";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -15,23 +14,11 @@ import {Hotel, LocalAirport, LocationCity, LocationOn, NearMe} from "@mui/icons-
 import Nameable from "../../model/Nameable";
 import Destination from "../../model/Destination";
 import DestinationType from "../../model/DestinationType";
-import TagCategory from "../../model/TagCategory";
 import Tag from "../../model/Tag";
 import DatePicker from "react-datepicker";
 import {SUPPORTED_LOCALES} from "../../App";
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-// const SEARCH_TYPE_OPTIONS = ["Accommodation", "Flight", "Transfer", "Car Rental"];
+import CompanionsSelect from "../companions-select/CompanionsSelect";
+import DurationType from "../../model/DurationType";
 
 interface SearchFilterConfig {
   onValueChange: (value: TripSearch) => void,
@@ -41,6 +28,7 @@ interface SearchFilterConfig {
 class SearchFilter extends Component<any, any> {
 
   private searchApiService = new SearchApiService();
+  private companionsWrapperRef: React.RefObject<any> | undefined ;
 
   constructor(props: SearchFilterConfig) {
     super(props);
@@ -49,19 +37,31 @@ class SearchFilter extends Component<any, any> {
       currentValue: value,
       isDestinationSelect: value.tripDetails.destination !== undefined,
       isSpecificPeriodSelect: value.tripTerms.period === undefined,
+      companionsSelectOpen: false,
       tags: []
-    }
+    };
+    this.companionsWrapperRef = React.createRef();
   }
 
   componentDidMount() {
+    document.addEventListener("mousedown", this.handleClickOutside.bind(this));
     this.searchApiService.getAllTags()
       .then(tags => this.setState({tags: tags}));
   }
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleClickOutside.bind(this));
+  }
+
+  handleClickOutside(event: { target: any }) {
+    if (this.state.companionsSelectOpen && this.companionsWrapperRef && !this.companionsWrapperRef.current.contains(event.target)) {
+      this.setState({companionsSelectOpen: false});
+    }
+  }
 
   render() {
-    // const searchOptionsValue = this.getSearchOptionsValue();
     const currentDestinationSelectFlag = this.state.isDestinationSelect;
     const currentPeriodSelectFlag = this.state.isSpecificPeriodSelect;
+    const companionsSelectOpen = this.state.companionsSelectOpen;
 
     return (
       <div className={"search-filter-wrapper"}>
@@ -74,12 +74,9 @@ class SearchFilter extends Component<any, any> {
                 labelId="search-filter-purpose-label"
                 value={this.state.currentValue?.tripDetails?.category}
                 label="Purpose"
-                onChange={() => this.handlePurposeChange()}>
+                onChange={(e, r) => this.handlePurposeChange(e.target.value)}>
                 <MenuItem value={TripType.beach}>Beach</MenuItem>
-                <MenuItem value={TripType.sports}>Sports</MenuItem>
                 <MenuItem value={TripType.city}>City</MenuItem>
-                <MenuItem value={TripType.resort}>Resort</MenuItem>
-                <MenuItem value={TripType.road_trip}>Road Trip</MenuItem>
                 <MenuItem value={TripType.sightseeing}>Sightseeing</MenuItem>
                 <MenuItem value={TripType.mountain}>Mountain</MenuItem>
                 <MenuItem value={TripType.ski}>Ski</MenuItem>
@@ -100,43 +97,37 @@ class SearchFilter extends Component<any, any> {
           </Link>
         </div>
 
-        {/*<FormControl fullWidth size="small">*/}
-        {/*  <InputLabel id="search-filter-options-label">Options</InputLabel>*/}
-        {/*  <Select*/}
-        {/*    labelId="search-filter-options-label"*/}
-        {/*    id="search-filter-options"*/}
-        {/*    multiple*/}
-        {/*    value={searchOptionsValue}*/}
-        {/*    onChange={(e) => this.handleOptionsChange(e.target.value as string[])}*/}
-        {/*    input={<OutlinedInput label="Option" />}*/}
-        {/*    renderValue={(selected) => selected.join(', ')}*/}
-        {/*    MenuProps={MenuProps}*/}
-        {/*  >*/}
-        {/*    {SEARCH_TYPE_OPTIONS.map(name => (*/}
-        {/*      <MenuItem key={name} value={name}>*/}
-        {/*        <Checkbox checked={searchOptionsValue.indexOf(name) > -1} />*/}
-        {/*        <ListItemText primary={name} />*/}
-        {/*      </MenuItem>*/}
-        {/*    ))}*/}
-        {/*  </Select>*/}
-        {/*</FormControl>*/}
-
         <div className={"search-filter-period-wrapper"}>
           { !currentPeriodSelectFlag ?
-            <FormControl fullWidth size="small">
-              <InputLabel id="search-filter-period-label">Period</InputLabel>
-              <Select
-                id="search-filter-period"
-                labelId="search-filter-period-label"
-                value={this.state.currentValue?.tripTerms?.period}
-                label="Period"
-                onChange={(e, r) => this.handlePeriodChange(e.target.value as string)}>
-                <MenuItem value={PeriodType.summer}>Summer</MenuItem>
-                <MenuItem value={PeriodType.autumn}>Autumn</MenuItem>
-                <MenuItem value={PeriodType.winter}>Winter</MenuItem>
-                <MenuItem value={PeriodType.spring}>Spring</MenuItem>
-              </Select>
-            </FormControl> : <DatePicker
+            <div className={"search-filter-period-unknown-wrapper"}>
+              <FormControl fullWidth size="small">
+                <InputLabel id="search-filter-duration-label">Duration</InputLabel>
+                <Select
+                  id="search-filter-duration"
+                  labelId="search-filter-duration-label"
+                  value={this.state.currentValue?.tripTerms?.duration}
+                  label="Duration"
+                  onChange={(e, r) => this.handleDurationChange(e.target.value as string)}>
+                  <MenuItem value={DurationType.weekend}>Over the eekend</MenuItem>
+                  <MenuItem value={DurationType.week}>One week</MenuItem>
+                  <MenuItem value={DurationType.month}>Whole month</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl fullWidth size="small">
+                <InputLabel id="search-filter-period-label">Period</InputLabel>
+                <Select
+                  id="search-filter-period"
+                  labelId="search-filter-period-label"
+                  value={this.state.currentValue?.tripTerms?.period}
+                  label="Period"
+                  onChange={(e, r) => this.handlePeriodChange(e.target.value as string)}>
+                  <MenuItem value={PeriodType.summer}>Summer</MenuItem>
+                  <MenuItem value={PeriodType.fall}>Fall</MenuItem>
+                  <MenuItem value={PeriodType.winter}>Winter</MenuItem>
+                  <MenuItem value={PeriodType.spring}>Spring</MenuItem>
+                </Select>
+              </FormControl>
+            </div> : <DatePicker
               selected={this.state.currentValue?.tripTerms?.startDate}
               minDate={new Date()}
               onChange={this.handleDatesValueChange.bind(this)}
@@ -146,63 +137,29 @@ class SearchFilter extends Component<any, any> {
               locale={SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language.split('-')[0] : "en"}
               customInput={<TextField value={this.state.currentValue?.tripTerms?.startDate + ' - ' + this.state.currentValue?.tripTerms?.endDate}
                                       size={"small"}
+                                      label={"Dates"}
                                       placeholder={undefined}
                                       style={{width: '100%'}}/>}
             />
-
-
-            // <LocalizationProvider
-            //   dateAdapter={AdapterDayjs}
-            //   localeText={{ start: 'Check-in', end: 'Check-out' }}>
-            //   <DateRangePicker
-            //     className={"search-filter-period-dates"}
-            //     value={[this.state.currentValue?.tripTerms?.startDate, this.state.currentValue?.tripTerms?.endDate]}
-            //     onChange={this.handleDatesValueChange.bind(this)}
-            //     minDate={new Date()}
-            //     renderInput={(startProps, endProps) => (
-            //       <React.Fragment>
-            //         <TextField {...startProps}
-            //                    size={"small"}
-            //                    className={"date-field"}
-            //                    InputProps={{
-            //                      sx: {
-            //                        "& input": {
-            //                          textAlign: "center"
-            //                        }
-            //                      },
-            //                      startAdornment: (
-            //                        <InputAdornment position="start">
-            //                          <CalendarMonth />
-            //                        </InputAdornment>
-            //                      ),
-            //                    }}>
-            //         </TextField>
-            //         <Box sx={{ mx: 1 }}></Box>
-            //         <TextField {...endProps}
-            //                    size={"small"}
-            //                    className={"date-field"}
-            //                    InputProps={{
-            //                      sx: {
-            //                        "& input": {
-            //                          textAlign: "center"
-            //                        }
-            //                      },
-            //                      startAdornment: (
-            //                        <InputAdornment position="start">
-            //                          <CalendarMonth />
-            //                        </InputAdornment>
-            //                      ),
-            //                    }}>
-            //         </TextField>
-            //       </React.Fragment>
-            //     )}
-            //   />
-            // </LocalizationProvider>
-            }
+          }
 
           <Link className="search-filter-link" onClick={e => this.handleChangeToPeriodSelect()}>
             { currentPeriodSelectFlag ? "I do not know when" : "Choose specific dates" }
           </Link>
+        </div>
+
+        <div className={"search-filter-companions-wrapper"} ref={this.companionsWrapperRef}>
+          <TextField
+            size={"small"}
+            className={"search-filter-companions"}
+            label={"Companions"}
+            value={this.getCompanionsDisplay(this.state.currentValue?.tripTerms)}
+            onClick={e => this.setState({ companionsSelectOpen: true})}></TextField>
+          { companionsSelectOpen ? <CompanionsSelect
+              className="search-filter-companions-select"
+              initialValueExtractor={() => this.state.currentValue.tripTerms}
+              onValueChange={(v: TripTerms) => this.handleCompanionsChange(v as TripTerms)}>
+            </CompanionsSelect> : null }
         </div>
 
         <Autocomplete
@@ -237,12 +194,6 @@ class SearchFilter extends Component<any, any> {
           currentValue={this.state.currentValue.previousLocations?.locations}
           startAdornment={<Hotel className={"location-start-icon"}/>}></SearchInput>
 
-        <SearchFilterCompanionsSelect
-          className={"search-filter-companions"}
-          onValueChange={this.handleCompanionsChange.bind(this)}
-          initialValueExtractor={() => this.state.currentValue?.tripTerms}>
-        </SearchFilterCompanionsSelect>
-
         <Button
           className={"search-filter-apply"}
           variant={"contained"}
@@ -250,6 +201,10 @@ class SearchFilter extends Component<any, any> {
           onClick={this.applyFilter.bind(this)}>Apply</Button>
       </div>
     );
+  }
+
+  private getCompanionsDisplay(value: TripTerms) {
+    return value ? value.adults + ' adults, ' + value.children + ' children': '';
   }
 
   private applyFilter() {
@@ -330,40 +285,53 @@ class SearchFilter extends Component<any, any> {
     });
   }
 
-  // private getSearchOptionsValue() {
-  //   const value = [];
-  //   if (this.state.currentValue?.tripDetails?.accommodation === true) {
-  //     value.push("Accommodation");
-  //   }
-  //   if (this.state.currentValue?.tripDetails?.flight === true) {
-  //     value.push("Flight");
-  //   }
-  //   if (this.state.currentValue?.tripDetails?.transfer === true) {
-  //     value.push("Transfer");
-  //   }
-  //   if (this.state.currentValue?.tripDetails?.carRental === true) {
-  //     value.push("Car Rental");
-  //   }
-  //   return value;
-  // }
-
-  private handlePurposeChange() {
-
+  private handlePurposeChange(category: TripType) {
+    const newValue = {
+      ...this.state.currentValue.tripDetails,
+      category: category,
+    };
+    this.setState({
+      currentValue: {
+        ...this.state.currentValue,
+        tripDetails: newValue
+      }
+    });
   }
 
   private handleDestinationChange(dest: Nameable | Nameable[] | null) {
-
-  }
-
-
-  private handleAttendanceChange() {
-
+    const newValue = {
+      ...this.state.currentValue.tripDetails,
+      destination: dest,
+    };
+    this.setState({
+      currentValue: {
+        ...this.state.currentValue,
+        tripDetails: newValue
+      }
+    });
   }
 
   private handlePeriodChange(value: string) {
     const newValue = {
       ...this.state.currentValue.tripTerms,
       period: value as PeriodType,
+      startDate: undefined,
+      endDate: undefined
+    };
+    this.setState({
+      currentValue: {
+        ...this.state.currentValue,
+        tripTerms: newValue
+      }
+    });
+  }
+
+  private handleDurationChange(value: string) {
+    const newValue = {
+      ...this.state.currentValue.tripTerms,
+      duration: value as DurationType,
+      startDate: undefined,
+      endDate: undefined
     };
     this.setState({
       currentValue: {
@@ -384,7 +352,9 @@ class SearchFilter extends Component<any, any> {
     const newValue = {
       ...this.state.currentValue.tripTerms,
       startDate: start,
-      endDate: end
+      endDate: end,
+      period: undefined,
+      duration: undefined
     };
 
     this.setState({
@@ -394,34 +364,6 @@ class SearchFilter extends Component<any, any> {
       }
     });
   }
-
-  // private handleOptionsChange(value: string[]) {
-  //   let typeValue = this.state.currentValue.tripDetails;
-  //   typeValue = {
-  //     ...typeValue,
-  //     accommodation: true
-  //   };
-  //   typeValue = {
-  //     ...typeValue,
-  //     flight: value.indexOf("Flight") > -1
-  //   };
-  //   typeValue = {
-  //     ...typeValue,
-  //     transfer: value.indexOf("Transfer") > -1
-  //   };
-  //   typeValue = {
-  //     ...typeValue,
-  //     carRental: value.indexOf("Car Rental") > -1
-  //   };
-  //
-  //   const newValue = {
-  //     ...this.state.currentValue,
-  //     tripDetails: typeValue
-  //   }
-  //   this.setState({
-  //     currentValue: newValue
-  //   });
-  // }
 
   private generateLocationOption(props: any, option: Accommodation): ReactElement {
     return (<Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>

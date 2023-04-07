@@ -1,5 +1,3 @@
-import ChatParticipant from "./ChatParticipant";
-
 class ChatMessage {
   own: boolean = true;
   text: string = '';

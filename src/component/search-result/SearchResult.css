@@ -26,15 +26,32 @@
     font-weight: 500;
 }
 
-.search-result-price {
+.search-result-details {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
     font-size: 14px;
     font-weight: 500;
+    justify-content: space-between;
+    color: grey;
+}
+
+.search-result-price {
+
+}
+
+.search-result-period {
+    font-size: 14px;
 }
 
 .search-result-rating {
     position: absolute;
     top: 0;
     right: 0;
+}
+
+.search-result-rating:hover {
+    opacity: 0.7;
 }
 
 .search-result-rating-reviews {
@@ -69,14 +86,14 @@
     position: absolute!important;
     top: calc(50% - 20px);
     right: 5px;
-    background-color: rgba(240, 240, 240, 0.2) !important;
+    background-color: rgba(240, 240, 240, 0.4) !important;
 }
 
 .search-result-image-previous {
     position: absolute!important;
     top: calc(50% - 20px);
     left: 5px;
-    background-color: rgba(240, 240, 240, 0.2) !important;
+    background-color: rgba(240, 240, 240, 0.4) !important;
 }
 
 .search-result-image-next:hover, .search-result-image-previous:hover {

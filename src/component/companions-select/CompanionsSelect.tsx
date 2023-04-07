@@ -25,22 +25,18 @@ class CompanionsSelect extends Component<any, any> {
       <div className={"companions-select-wrapper " + (this.props.className ? this.props.className : "")}>
         <FormControlLabel className={"companions-select-label"}
                           control={<NumberInput onValueChange={val => this.onAttendanceChange(val, "adults")}
+                                                max={6}
                                                 defaultValue={this.state.currentValue?.adults}/>}
                           label="Adults"
                           labelPlacement={"start"} />
         <FormControlLabel className={"companions-select-label"}
                           control={<NumberInput onValueChange={val => this.onAttendanceChange(val, "children")}
+                                                max={6}
                                                 defaultValue={this.state.currentValue?.children}/>}
                           label="Children"
                           labelPlacement={"start"} />
 
         { this.getChildrenAgeFields() }
-
-        <FormControlLabel className={"companions-select-label"}
-                          control={<NumberInput onValueChange={val => this.onAttendanceChange(val, "rooms")}
-                                                defaultValue={this.state.currentValue?.rooms}/>}
-                          label="Rooms"
-                          labelPlacement={"start"} />
       </div>
     );
   }
@@ -53,6 +49,8 @@ class CompanionsSelect extends Component<any, any> {
       const field = <FormControlLabel className={"companions-select-label"}
                                       key={"child-age-" + (i + 1)}
                                       control={<NumberInput onValueChange={val => this.onChildAgeChange(val, i)}
+                                                            key={"child-age-" + i}
+                                                            max={17}
                                                             defaultValue={defaultValue}/>}
                                       label={"Child " + (i + 1) + " age"}
                                       labelPlacement={"start"} />

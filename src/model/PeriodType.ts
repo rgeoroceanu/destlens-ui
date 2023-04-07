@@ -1,7 +1,7 @@
 enum PeriodType {
   summer = 'SUMMER',
   spring = 'SPRING',
-  autumn = 'AUTUMN',
+  fall = 'FALL',
   winter = 'WINTER',
 }
 

@@ -40,7 +40,8 @@ class TripSearchResults extends Component<any, any> {
                           initialValueExtractor={() => this.state.tripSearch}>
             </SearchFilter>
 
-            { this.state.searching ? this.getProgressComponent() : <SearchResults results={results}></SearchResults> }
+            { this.state.searching ? this.getProgressComponent() :
+              (results.length > 0 ? <SearchResults results={results}></SearchResults> : this.getNoResultsComponent()) }
           </Container>
         </div>
       </div>
@@ -50,6 +51,12 @@ class TripSearchResults extends Component<any, any> {
   private getProgressComponent() {
     return <div className={"progress-wrapper"}>
       <CircularProgress className={"progress"}/>
+    </div>
+  }
+
+  private getNoResultsComponent() {
+    return <div className={"progress-wrapper"}>
+      <div className={"no-results"}>No results matching your search!</div>
     </div>
   }
 

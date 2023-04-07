@@ -9,6 +9,7 @@ interface Accommodation extends Nameable {
   ratingValue: number
   reviewCount: number
   url: string
+  tripadvisorUrl: string
   ratingImageUrl: string
   priceLevel: number
 }

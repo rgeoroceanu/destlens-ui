@@ -10,8 +10,8 @@ import Tag from "../model/Tag";
 class SearchApiService {
 
   private http = axios.create({
-    baseURL: "http://localhost:8080/",
-    //baseURL: "https://api.tripwizard.io/",
+    //baseURL: "http://localhost:8080/",
+    baseURL: "https://api.tripwizard.io/",
     headers: {
       "Content-Type": "application/json"
     }

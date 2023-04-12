@@ -3,6 +3,7 @@ import './CompanionsSelect.css';
 import TripTerms from "../../model/TripTerms";
 import {FormControlLabel} from "@mui/material";
 import NumberInput from "../number-input/NumberInput";
+import {withTranslation} from "react-i18next";
 
 interface CompanionsSelectConfig extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   onValueChange: (value: TripTerms) => void,
@@ -27,13 +28,13 @@ class CompanionsSelect extends Component<any, any> {
                           control={<NumberInput onValueChange={val => this.onAttendanceChange(val, "adults")}
                                                 max={6}
                                                 defaultValue={this.state.currentValue?.adults}/>}
-                          label="Adults"
+                          label={this.props.t('companions.adults')}
                           labelPlacement={"start"} />
         <FormControlLabel className={"companions-select-label"}
                           control={<NumberInput onValueChange={val => this.onAttendanceChange(val, "children")}
                                                 max={6}
                                                 defaultValue={this.state.currentValue?.children}/>}
-                          label="Children"
+                          label={this.props.t('companions.children')}
                           labelPlacement={"start"} />
 
         { this.getChildrenAgeFields() }
@@ -52,7 +53,7 @@ class CompanionsSelect extends Component<any, any> {
                                                             key={"child-age-" + i}
                                                             max={17}
                                                             defaultValue={defaultValue}/>}
-                                      label={"Child " + (i + 1) + " age"}
+                                      label={this.props.t('companions.childAge', { number: '' + (i + 1)})}
                                       labelPlacement={"start"} />
 
       fields.push(field);
@@ -86,4 +87,4 @@ class CompanionsSelect extends Component<any, any> {
   }
 }
 
-export default CompanionsSelect;
+export default withTranslation()(CompanionsSelect);

@@ -4,12 +4,15 @@ import AccommodationMatch from "../../model/AccommodationMatch";
 import {ArrowLeftRounded, ArrowRightRounded} from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import {SUPPORTED_LOCALES} from "../../App";
+import {t} from "i18next";
+import DateHelper from "../../helper/DateHelper";
 
 interface SearchResultValue {
   result: AccommodationMatch;
+  index: number;
 }
 
-function SearchResult({result}: SearchResultValue) {
+function SearchResult({result, index}: SearchResultValue) {
   const [currentImageIndex, setCurrentImageIndex] = React.useState<number>(0);
   const dateLocale = SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language : "en-US";
 
@@ -27,18 +30,19 @@ function SearchResult({result}: SearchResultValue) {
                   onClick={e => handlePreviousImage(e, setCurrentImageIndex, result.accommodation.photos.length, currentImageIndex)}>
         <ArrowLeftRounded />
       </IconButton>
+      { index === 0 && result.score > 0.7 ? <div className={"search-result-score"}>{'Best match: ' + Math.floor(result.score * 100) + '%'}</div> : null }
     </div>
     <div className={"search-result-details-wrapper"}>
       <div className={"search-result-title"}>{result.accommodation.name}</div>
       <div className={"search-result-subtitle"}>{result.accommodation.city + ', ' + result.accommodation.country}</div>
       <div className={"search-result-details"}>
-        <div className={"search-result-period"}>{new Date(result.checkinDate).toLocaleDateString(dateLocale) + " - " + new Date(result.checkoutDate).toLocaleDateString(dateLocale)}</div>
-        <div className={"search-result-price"}>{"from " + getTotalPrice(result) + result.currency}</div>
+        <div className={"search-result-period"}>{DateHelper.formatDateRange(result.checkinDate, result.checkoutDate, dateLocale)}</div>
+        <div className={"search-result-price"}>{t("search.result.from") + " " + getTotalPrice(result) + result.currency}</div>
       </div>
-      <div className={"search-result-rating"} onClick={event => handleTripadvisorImageClick(result, event)}>
+      { result.accommodation.ratingImageUrl ? <div className={"search-result-rating"} onClick={event => handleTripadvisorImageClick(result, event)}>
         <img className={"search-result-rating-image"} src={result.accommodation.ratingImageUrl} alt={"rating"}/>
-        <div className={"search-result-rating-reviews"}>{result.accommodation.reviewCount + ' reviews'}</div>
-      </div>
+        <div className={"search-result-rating-reviews"}>{result.accommodation.reviewCount + ' ' + t("search.result.reviews")}</div>
+      </div> : null }
 
     </div>
   </div>;

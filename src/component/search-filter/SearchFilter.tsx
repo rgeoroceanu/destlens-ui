@@ -19,18 +19,15 @@ import DatePicker from "react-datepicker";
 import {SUPPORTED_LOCALES} from "../../App";
 import CompanionsSelect from "../companions-select/CompanionsSelect";
 import DurationType from "../../model/DurationType";
-
-interface SearchFilterConfig {
-  onValueChange: (value: TripSearch) => void,
-  initialValueExtractor?: () => TripSearch
-}
+import {withTranslation} from "react-i18next";
+import DateHelper from "../../helper/DateHelper";
 
 class SearchFilter extends Component<any, any> {
 
   private searchApiService = new SearchApiService();
-  private companionsWrapperRef: React.RefObject<any> | undefined ;
+  private readonly companionsWrapperRef: React.RefObject<any> | undefined ;
 
-  constructor(props: SearchFilterConfig) {
+  constructor(props: any) {
     super(props);
     const value = props.initialValueExtractor && props.initialValueExtractor() ? props.initialValueExtractor() : new TripSearch();
     this.state = {
@@ -62,28 +59,31 @@ class SearchFilter extends Component<any, any> {
     const currentDestinationSelectFlag = this.state.isDestinationSelect;
     const currentPeriodSelectFlag = this.state.isSpecificPeriodSelect;
     const companionsSelectOpen = this.state.companionsSelectOpen;
+    const {t} = this.props;
+    const currentTags = this.state.currentValue?.tags?.tags;
+    const dateLocale = SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language : "en-US";
 
     return (
       <div className={"search-filter-wrapper"}>
         <div className={"search-filter-type-wrapper"}>
           { !currentDestinationSelectFlag ?
             <FormControl fullWidth size="small">
-              <InputLabel id="search-filter-purpose-label">Purpose</InputLabel>
+              <InputLabel id="search-filter-purpose-label">{t('search.filter.purpose')}</InputLabel>
               <Select
                 id="search-filter-purpose"
                 labelId="search-filter-purpose-label"
                 value={this.state.currentValue?.tripDetails?.category}
-                label="Purpose"
+                label={t('search.filter.purpose')}
                 onChange={(e, r) => this.handlePurposeChange(e.target.value)}>
-                <MenuItem value={TripType.beach}>Beach</MenuItem>
-                <MenuItem value={TripType.city}>City</MenuItem>
-                <MenuItem value={TripType.sightseeing}>Sightseeing</MenuItem>
-                <MenuItem value={TripType.mountain}>Mountain</MenuItem>
-                <MenuItem value={TripType.ski}>Ski</MenuItem>
+                <MenuItem value={TripType.beach}>{t('type.tripType.BEACH')}</MenuItem>
+                <MenuItem value={TripType.city}>{t('type.tripType.CITY')}</MenuItem>
+                <MenuItem value={TripType.sightseeing}>{t('type.tripType.SIGHTSEEING')}</MenuItem>
+                <MenuItem value={TripType.mountain}>{t('type.tripType.MOUNTAIN')}</MenuItem>
+                <MenuItem value={TripType.ski}>{t('type.tripType.SKI')}</MenuItem>
               </Select>
             </FormControl> : <SearchInput
               size={"small"}
-              label={"Destination"}
+              label={t('search.filter.destination')}
               searchFunction={query => this.searchApiService.searchDestination(query)}
               onValueChange={dest => this.handleDestinationChange(dest)}
               currentValue={this.state.currentValue?.tripDetails?.destination}
@@ -93,7 +93,7 @@ class SearchFilter extends Component<any, any> {
               startAdornment={<NearMe className={"destination-value-icon"}/>}/>}
 
           <Link className="search-filter-link" onClick={e => this.handleChangeToDestinationSelect()}>
-            { currentDestinationSelectFlag ? "I do not know where" : "Choose destination" }
+            { currentDestinationSelectFlag ? t('search.filter.destinationKnown.no') : t('search.filter.destinationKnown.yes')  }
           </Link>
         </div>
 
@@ -101,30 +101,30 @@ class SearchFilter extends Component<any, any> {
           { !currentPeriodSelectFlag ?
             <div className={"search-filter-period-unknown-wrapper"}>
               <FormControl fullWidth size="small">
-                <InputLabel id="search-filter-duration-label">Duration</InputLabel>
+                <InputLabel id="search-filter-duration-label">{t('search.filter.duration')}</InputLabel>
                 <Select
                   id="search-filter-duration"
                   labelId="search-filter-duration-label"
                   value={this.state.currentValue?.tripTerms?.duration}
-                  label="Duration"
+                  label={t('search.filter.duration')}
                   onChange={(e, r) => this.handleDurationChange(e.target.value as string)}>
-                  <MenuItem value={DurationType.weekend}>Over the eekend</MenuItem>
-                  <MenuItem value={DurationType.week}>One week</MenuItem>
-                  <MenuItem value={DurationType.month}>Whole month</MenuItem>
+                  <MenuItem value={DurationType.weekend}>{t('type.durationType.WEEKEND')}</MenuItem>
+                  <MenuItem value={DurationType.week}>{t('type.durationType.WEEK')}</MenuItem>
+                  <MenuItem value={DurationType.month}>{t('type.durationType.MONTH')}</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth size="small">
-                <InputLabel id="search-filter-period-label">Period</InputLabel>
+                <InputLabel id="search-filter-period-label">{t('search.filter.period')}</InputLabel>
                 <Select
                   id="search-filter-period"
                   labelId="search-filter-period-label"
                   value={this.state.currentValue?.tripTerms?.period}
-                  label="Period"
+                  label={t('search.filter.period')}
                   onChange={(e, r) => this.handlePeriodChange(e.target.value as string)}>
-                  <MenuItem value={PeriodType.summer}>Summer</MenuItem>
-                  <MenuItem value={PeriodType.fall}>Fall</MenuItem>
-                  <MenuItem value={PeriodType.winter}>Winter</MenuItem>
-                  <MenuItem value={PeriodType.spring}>Spring</MenuItem>
+                  <MenuItem value={PeriodType.summer}>{t('type.periodType.SUMMER')}</MenuItem>
+                  <MenuItem value={PeriodType.fall}>{t('type.periodType.FALL')}</MenuItem>
+                  <MenuItem value={PeriodType.winter}>{t('type.periodType.WINTER')}</MenuItem>
+                  <MenuItem value={PeriodType.spring}>{t('type.periodType.SPRING')}</MenuItem>
                 </Select>
               </FormControl>
             </div> : <DatePicker
@@ -133,18 +133,18 @@ class SearchFilter extends Component<any, any> {
               onChange={this.handleDatesValueChange.bind(this)}
               startDate={this.state.currentValue?.tripTerms?.startDate}
               endDate={this.state.currentValue?.tripTerms?.endDate}
+              dateFormat={DateHelper.getDateFormatString(dateLocale)}
               selectsRange
               locale={SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language.split('-')[0] : "en"}
-              customInput={<TextField value={this.state.currentValue?.tripTerms?.startDate + ' - ' + this.state.currentValue?.tripTerms?.endDate}
-                                      size={"small"}
-                                      label={"Dates"}
+              customInput={<TextField size={"small"}
+                                      label={t('search.filter.dates')}
                                       placeholder={undefined}
                                       style={{width: '100%'}}/>}
             />
           }
 
           <Link className="search-filter-link" onClick={e => this.handleChangeToPeriodSelect()}>
-            { currentPeriodSelectFlag ? "I do not know when" : "Choose specific dates" }
+            { currentPeriodSelectFlag ? t("search.filter.periodKnown.no") : t("search.filter.periodKnown.yes") }
           </Link>
         </div>
 
@@ -152,7 +152,7 @@ class SearchFilter extends Component<any, any> {
           <TextField
             size={"small"}
             className={"search-filter-companions"}
-            label={"Companions"}
+            label={t("search.filter.companions")}
             value={this.getCompanionsDisplay(this.state.currentValue?.tripTerms)}
             onClick={e => this.setState({ companionsSelectOpen: true})}></TextField>
           { companionsSelectOpen ? <CompanionsSelect
@@ -168,22 +168,22 @@ class SearchFilter extends Component<any, any> {
           id="search-filter-tags"
           className={"search-filter-tags"}
           options={this.state.tags}
-          value={this.state.tags.filter((t: Tag) => this.state.currentValue?.tags?.tags ? this.state.currentValue?.tags?.tags.includes(t.id) : false)}
+          value={this.state.tags.filter((t: Tag) => !!currentTags && typeof currentTags === "object" && currentTags.hasOwnProperty("length") && typeof currentTags.length === "number" && currentTags.length > 0 ? this.state.currentValue?.tags?.tags.includes(t.id) : false)}
           getOptionLabel={(tag: Tag) => tag.name as string}
           onChange={(e, tags) => this.handleTagsChange(tags)}
           renderInput={(params) => (
             <TextField
               {...params}
               variant="outlined"
-              label="Tags"
-              placeholder="Search"
+              label={t("search.filter.tags")}
+              placeholder={t("general.search")}
             />
           )}
         />
 
         <SearchInput
           size={"small"}
-          label="Previous locations"
+          label={t("search.filter.previousLocations")}
           multiple={true}
           key={"search-filter-previous-locations"}
           searchFunction={query => this.searchApiService.searchAccommodation(query)}
@@ -204,7 +204,7 @@ class SearchFilter extends Component<any, any> {
   }
 
   private getCompanionsDisplay(value: TripTerms) {
-    return value ? value.adults + ' adults, ' + value.children + ' children': '';
+    return value ? value.adults + ' ' + this.props.t('companions.adults') + ', ' + value.children + ' ' + this.props.t('companions.children') : '';
   }
 
   private applyFilter() {
@@ -402,4 +402,4 @@ class SearchFilter extends Component<any, any> {
   }
 }
 
-export default SearchFilter;
+export default withTranslation()(SearchFilter);

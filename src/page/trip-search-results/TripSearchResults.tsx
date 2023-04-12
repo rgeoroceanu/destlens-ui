@@ -9,6 +9,7 @@ import SearchApiService from "../../service/SearchApiService";
 import SearchFilter from "../../component/search-filter/SearchFilter";
 import withRouter from "../../helper/WithRouter";
 import AccommodationMatch from "../../model/AccommodationMatch";
+import {withTranslation} from "react-i18next";
 
 class TripSearchResults extends Component<any, any> {
 
@@ -16,16 +17,16 @@ class TripSearchResults extends Component<any, any> {
 
   constructor(props: any) {
     super(props);
-    const tripSearch = props.location?.state?.tripSearch;
     this.state = {
-      tripSearch: tripSearch ? tripSearch : new TripSearch(),
       results: [],
-      searching: true
+      searching: false
     };
   }
 
   componentDidMount() {
-    this.startSearch();
+    if (this.state.searching === false) {
+      this.startSearch(this.props.location?.state?.tripSearch);
+    }
   }
 
   render() {
@@ -36,8 +37,8 @@ class TripSearchResults extends Component<any, any> {
         <Progress value={100}/>
         <div className={"content-scrollable"}>
           <Container className={"content-wrapper"}>
-            <SearchFilter onValueChange={this.onFilterChange.bind(this)}
-                          initialValueExtractor={() => this.state.tripSearch}>
+            <SearchFilter onValueChange={(v: TripSearch) => this.startSearch(v)}
+                          initialValueExtractor={() => this.props.location?.state?.tripSearch}>
             </SearchFilter>
 
             { this.state.searching ? this.getProgressComponent() :
@@ -56,21 +57,17 @@ class TripSearchResults extends Component<any, any> {
 
   private getNoResultsComponent() {
     return <div className={"progress-wrapper"}>
-      <div className={"no-results"}>No results matching your search!</div>
+      <div className={"no-results"}>{this.props.t('search.empty')}</div>
     </div>
   }
 
-  private onFilterChange(search: TripSearch) {
-    this.setState({ tripSearch: search });
-    this.startSearch();
-  }
-
-  private startSearch() {
+  private startSearch(search: TripSearch) {
     this.setState({
-      searching: true
+      searching: true,
+      results: []
     });
 
-    this.searchService.findMatchingAccommodations(this.state.tripSearch)
+    this.searchService.findMatchingAccommodations(search)
       .then(res => this.onMatchResults(res))
       .finally(() => this.setState({
         searching: false
@@ -86,4 +83,4 @@ class TripSearchResults extends Component<any, any> {
   }
 }
 
-export default withRouter(TripSearchResults);
+export default withTranslation()(withRouter(TripSearchResults));

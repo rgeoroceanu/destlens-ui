@@ -17,7 +17,7 @@ class SearchResults extends Component<any, any> {
   private getResultComponents(matches: AccommodationMatch[]) {
     const components = [];
     for (let i=0; i<matches.length; i++) {
-      const component = <SearchResult key={'result'+i}result={matches[i]}></SearchResult>
+      const component = <SearchResult key={'result'+i} result={matches[i]} index={i}></SearchResult>
       components.push(component);
     }
     return components;

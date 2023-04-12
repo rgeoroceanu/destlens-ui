@@ -2,13 +2,15 @@ import React, {Component} from 'react';
 import './Chat.css';
 import ChatMessage from "../../model/ChatMessage";
 import TextField from "@mui/material/TextField";
-import {FastForward, FastRewind, Refresh, Send, SkipNext} from "@mui/icons-material";
+import {FastRewind, Refresh, Send, SkipNext} from "@mui/icons-material";
 import {TypeAnimation} from "react-type-animation";
 import {Button, IconButton} from "@mui/material";
+import {withTranslation} from "react-i18next";
 
 class Chat extends Component<any, any> {
 
   render() {
+    const { t } = this.props;
     const component = this.props.inputComponent ? this.props.inputComponent : this.getDefaultInputComponent();
     const loading = this.props.loading ? this.props.loading : false;
     const sendClickListener = this.props.sendClickListener ? this.props.sendClickListener : undefined;
@@ -26,21 +28,21 @@ class Chat extends Component<any, any> {
                                              className={"chat-state-button"}
                                              variant="outlined"
                                              startIcon={<Refresh />}>
-              Restart
+              <span className={"chat-state-button-label"}>{t('general.restart')}</span>
             </Button> : null }
             { previousClickListener ? <Button onClick={previousClickListener}
                                               color="primary"
                                               className={"chat-state-button"}
                                               variant="outlined"
                                               startIcon={<FastRewind />}>
-              Previous
+              <span className={"chat-state-button-label"}>{t('general.previous')}</span>
             </Button> : null }
             { skipClickListener && skipButtonVisible ? <Button onClick={skipClickListener}
                                               color="primary"
                                               className={"chat-state-button"}
                                               variant="outlined"
                                               startIcon={<SkipNext />}>
-              Skip
+              <span className={"chat-state-button-label"}>{t('general.skip')}</span>
             </Button> : null }
           </div>
         }
@@ -96,4 +98,4 @@ class Chat extends Component<any, any> {
   }
 }
 
-export default Chat;
+export default withTranslation()(Chat);

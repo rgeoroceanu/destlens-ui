@@ -9,8 +9,18 @@ import TripSearchAssistant from "./page/trip-search-assistant/TripSearchAssistan
 import {registerLocale} from "react-datepicker";
 import de from 'date-fns/locale/de';
 import ro from 'date-fns/locale/ro';
+import './i18n';
 
 export const SUPPORTED_LOCALES = ["de", "ro", "en"]
+
+function resetHeight(){
+  // reset the body height to that of the inner browser
+  document.body.style.height = window.innerHeight + "px";
+}
+// reset the height whenever the window's resized
+window.addEventListener("resize", resetHeight);
+// called to initially set the height.
+resetHeight();
 
 function App() {
   if (navigator.language.split('-')[0] === 'de') {

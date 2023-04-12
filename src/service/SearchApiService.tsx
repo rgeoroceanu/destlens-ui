@@ -46,7 +46,7 @@ class SearchApiService {
       childrenAges: tripSearch.tripTerms?.childrenAges,
       rooms: tripSearch.tripTerms?.rooms,
       previousAccommodationIds: tripSearch.previousLocations?.locations.map(l => l.externalId),
-      tags: tripSearch.tags?.tags,
+      tags: tripSearch.tags?.tags ? Array.from(tripSearch.tags?.tags) : [],
     };
 
     return this.http.post<MatchResult>("/accommodation/matching", request)

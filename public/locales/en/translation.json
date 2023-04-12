@@ -1,0 +1,83 @@
+{
+  "general": {
+    "previous": "Previous",
+    "next": "Next",
+    "restart": "Restart",
+    "yes": "Yes",
+    "no": "No",
+    "search": "Search",
+    "skip": "Skip"
+  },
+  "type": {
+    "tripType": {
+      "BEACH": "Beach",
+      "CITY": "City",
+      "SIGHTSEEING": "Sightseeing",
+      "MOUNTAIN": "Mountain",
+      "SKI": "Ski"
+    },
+    "durationType": {
+      "WEEKEND": "Over the weekend",
+      "WEEK": "One week",
+      "MONTH": "Whole month"
+    },
+    "periodType": {
+      "SUMMER": "Summer",
+      "FALL": "Fall",
+      "WINTER": "Winter",
+      "SPRING": "Spring"
+    },
+    "answerYesNoType": {
+      "YES": "Yes",
+      "NO": "No"
+    }
+  },
+  "companions": {
+    "adults": "Adults",
+    "children": "Children",
+    "childAge": "Child {{number}} age"
+  },
+  "search": {
+    "empty": "No results matching your search!",
+    "result": {
+      "from": "from",
+      "reviews": "reviews"
+    },
+    "filter": {
+      "purpose": "Purpose",
+      "destination": "Destination",
+      "duration": "Duration",
+      "period": "Period",
+      "dates": "Dates",
+      "companions": "Companions",
+      "tags": "Tags",
+      "previousLocations": "Previous locations",
+      "destinationKnown": {
+        "yes": "Choose destination",
+        "no": "I do not know where"
+      },
+      "periodKnown": {
+        "yes": "Choose specific dates" ,
+        "no": "I do not know when"
+      }
+    }
+  },
+  "assistant": {
+    "chat": {
+      "skip": "(Skip step)",
+      "question": {
+        "destination_known_select": "Hello there! I am Tripwizard and I will help you find your perfect trip. Do you know where you want to go?",
+        "destination_select": "Great! So where do you want to go?",
+        "type_select": "No problem! We will find something suitable for you. You just need to tell us what kind of trip do you want.",
+        "period_known_select": "Do you know the exact period when you plan to travel?",
+        "period_duration_select": "No worries! Then you can select an approximate period. First choose the trip duration:",
+        "period_season_select": "Second, select in which period of the year:",
+        "period_dates_select": "Perfect! Then select the dates.",
+        "companions_select": "Who do you plan to travel with?",
+        "tags_select": "Now let's select some things that you would like to be included at your accommodation.",
+        "previous_locations_select": "Enter a few locations where did you enjoyed staying in the past. This will help a lot in finding the best results for your personal tastes.",
+        "complete": "Congrats! You completed all the steps! Now I will find something suitable just for you!"
+      }
+    }
+  }
+}

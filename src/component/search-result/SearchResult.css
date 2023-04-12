@@ -104,3 +104,20 @@
     border: 1px solid #e0e0e0;
     padding: 4px;
 }
+
+
+.search-result-score {
+    white-space: nowrap;
+    position: absolute !important;
+    padding: 8px 0;
+    min-width: 200px;
+    transform: rotate(-45deg) translate(-37%, 0);
+    color: #ffffff;
+    text-align: center;
+    text-transform: uppercase;
+    top: -25px;
+    box-sizing: border-box;
+    background-color: #01aac1bd;
+    font-weight: 900;
+    font-size: 12px;
+}

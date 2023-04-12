@@ -1,0 +1,83 @@
+{
+  "general": {
+    "previous": "Inapoi",
+    "next": "Inainte",
+    "restart": "Restart",
+    "yes": "Da",
+    "no": "Nu",
+    "search": "Cautare",
+    "skip": "Sari peste"
+  },
+  "type": {
+    "tripType": {
+      "BEACH": "Plaja",
+      "CITY": "Oras",
+      "SIGHTSEEING": "Obiective",
+      "MOUNTAIN": "Munte",
+      "SKI": "Schi"
+    },
+    "durationType": {
+      "WEEKEND": "Peste weekend",
+      "WEEK": "O saptamana",
+      "MONTH": "O luna"
+    },
+    "periodType": {
+      "SUMMER": "Vara",
+      "FALL": "Toamna",
+      "WINTER": "Iarna",
+      "SPRING": "Primavara"
+    },
+    "answerYesNoType": {
+      "YES": "Da",
+      "NO": "Nu"
+    }
+  },
+  "companions": {
+    "adults": "Adulti",
+    "children": "Copii",
+    "childAge": "Varsta copil {{number}}"
+  },
+  "search": {
+    "empty": "Nu s-a gasit nici un rezultat!",
+    "result": {
+      "from": "de la",
+      "reviews": "recenzii"
+    },
+    "filter": {
+      "purpose": "Scop",
+      "destination": "Destinatie",
+      "duration": "Durata",
+      "period": "Perioada",
+      "dates": "Date",
+      "companions": "Insotitori",
+      "tags": "Tag-uri",
+      "previousLocations": "Cazari anterioare",
+      "destinationKnown": {
+        "yes": "Alege locatii",
+        "no": "Nu stiu unde"
+      },
+      "periodKnown": {
+        "yes": "Alege date specifice" ,
+        "no": "Nu stiu cand"
+      }
+    }
+  },
+  "assistant": {
+    "chat": {
+      "skip": "(Pas sarit)",
+      "question": {
+        "destination_known_select": "Salut! Sunt Tripwizard si te voi ajuta sa gasesti vacanta perfecta! Stii unde vrei sa mergi?",
+        "destination_select": "Super! Unde vrei sa mergi?",
+        "type_select": "Nici o problema! O sa gasim ceva potrivit pentru tine. Trbuie doar sa ne spui ce tip de vacanta iti doresti.",
+        "period_known_select": "Stii perioada exacta cand vrei sa calatoresti?",
+        "period_duration_select": "Nici o grija! Atunci poti sa selectezi o perioada aproximativa. Prima data alege durata excursiei:",
+        "period_season_select": "Apoi alege perioada anului:",
+        "period_dates_select": "Perfect! Atunci selecteaza datele.",
+        "companions_select": "Cu cate peroane calatoresti?",
+        "tags_select": "Alege acum cateva lucruri care ai vrea sa le includa hotelul in care vei sta.",
+        "previous_locations_select": "Alege cateva hoteluri unde ai stat in trecut. Asta ne va ajuta sa gasim cea mai potrivita vacanta pentru tine.",
+        "complete": "Felicitari!"
+      }
+    }
+  }
+}

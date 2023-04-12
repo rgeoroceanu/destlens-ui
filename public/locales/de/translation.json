@@ -1,0 +1,83 @@
+{
+  "general": {
+    "previous": "Zurück",
+    "next": "Nächste",
+    "restart": "Neustart",
+    "yes": "Ja",
+    "no": "Nein",
+    "search": "Suchen",
+    "skip": "Überspringen"
+  },
+  "type": {
+    "tripType": {
+      "BEACH": "Strand",
+      "CITY": "Stadt",
+      "SIGHTSEEING": "Besichtigung",
+      "MOUNTAIN": "Berg",
+      "SKI": "Ski"
+    },
+    "durationType": {
+      "WEEKEND": "Übers Wochenende",
+      "WEEK": "Eine Woche",
+      "MONTH": "Ein Monat"
+    },
+    "periodType": {
+      "SUMMER": "Sommer",
+      "FALL": "Herbst",
+      "WINTER": "Winter",
+      "SPRING": "Frühling"
+    },
+    "answerYesNoType": {
+      "YES": "Ja",
+      "NO": "Nein"
+    }
+  },
+  "companions": {
+    "adults": "Erwachsene",
+    "children": "Kinder",
+    "childAge": "Kind {{number}} Alter"
+  },
+  "search": {
+    "empty": "Keine Ergebnisse!",
+    "result": {
+      "from": "ab",
+      "reviews": "Bewertungen"
+    },
+    "filter": {
+      "purpose": "Zweck",
+      "destination": "Reiseziel",
+      "duration": "Duration",
+      "period": "Dauer",
+      "dates": "Datum",
+      "companions": "Begleiter",
+      "tags": "Stichworte",
+      "previousLocations": "Vorherige Unterkünfte",
+      "destinationKnown": {
+        "yes": "Reiseziel auswählen",
+        "no": "Ich weiß nicht wo"
+      },
+      "periodKnown": {
+        "yes": "Bestimmte Daten auswählen" ,
+        "no": "Ich weiß nicht wann"
+      }
+    }
+  },
+  "assistant": {
+    "chat": {
+      "skip": "(Schritt überspringen)",
+      "question": {
+        "destination_known_select": "Hallo! Ich bin Tripwizard und helfe dir, deine perfekte Reise zu finden. Weißt du, wo du hin willst?",
+        "destination_select": "Super! Also, wo willst du hin?",
+        "type_select": "Kein Problem! Wir finden etwas Passendes für dich. Du musst uns nur mitteilen, welche Art von Reise du wünschst.",
+        "period_known_select": "Weißst du den genauen Zeitraum, in dem du reisen möchtest?",
+        "period_duration_select": "Kein Problem! Dann kannst du einen ungefähren Zeitraum auswählen. Wähle zuerst die Reisedauer:",
+        "period_season_select": "Zweitens wähle aus, in welchem Zeitraum des Jahres:",
+        "period_dates_select": "Perfekt! Wähle dann die Daten aus.",
+        "companions_select": "Mit wem planst du zu reisen?",
+        "tags_select": "Lass uns nun einige Stichwörte auswählen, die auf die Suche angewendet werden sollen.",
+        "previous_locations_select": "Gib ein paar Orte ein, an denen du dich in der Vergangenheit gerne aufgehalten hast. Dies wird dir sehr helfen, die besten Ergebnisse für deinen persönlichen Geschmack zu finden.",
+        "complete": "Herzlichen Glückwunsch! Du hast alle Schritte abgeschlossen! Jetzt suche ich etwas Passendes nur für dich!"
+      }
+    }
+  }
+}

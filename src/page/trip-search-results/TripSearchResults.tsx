@@ -10,6 +10,7 @@ import SearchFilter from "../../component/search-filter/SearchFilter";
 import withRouter from "../../helper/WithRouter";
 import AccommodationMatch from "../../model/AccommodationMatch";
 import {withTranslation} from "react-i18next";
+import ReactGA from "react-ga4";
 
 class TripSearchResults extends Component<any, any> {
 
@@ -24,6 +25,7 @@ class TripSearchResults extends Component<any, any> {
   }
 
   componentDidMount() {
+    ReactGA.send({ hitType: "pageview", page: "/trip-search-results", title: "Search Results" });
     if (this.state.searching === false) {
       this.startSearch(this.props.location?.state?.tripSearch);
     }

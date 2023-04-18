@@ -30,6 +30,7 @@ import Progress from "../../component/progress/Progress";
 import {withTranslation} from "react-i18next";
 import AnswerYesNoType from "../../model/AnswerYesNoType";
 import DateHelper from "../../helper/DateHelper";
+import ReactGA from "react-ga4";
 
 class TripSearchAssistant extends Component<any, any> {
 
@@ -43,6 +44,7 @@ class TripSearchAssistant extends Component<any, any> {
   }
 
   componentDidMount() {
+    ReactGA.send({ hitType: "pageview", page: "/", title: "Search Assistant" });
     document.addEventListener("mousedown", this.handleClickOutside.bind(this));
     this.searchApiService.getAllTags()
       .then(tags => this.setState({tags: tags}));

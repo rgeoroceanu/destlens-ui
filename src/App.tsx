@@ -10,6 +10,7 @@ import {registerLocale} from "react-datepicker";
 import de from 'date-fns/locale/de';
 import ro from 'date-fns/locale/ro';
 import './i18n';
+import ReactGA from "react-ga4";
 
 export const SUPPORTED_LOCALES = ["de", "ro", "en"]
 
@@ -23,6 +24,7 @@ window.addEventListener("resize", resetHeight);
 resetHeight();
 
 function App() {
+  ReactGA.initialize("G-F77JDEL8Q7");
   if (navigator.language.split('-')[0] === 'de') {
     registerLocale('de', de);
   } else if (navigator.language.split('-')[0] === 'ro') {

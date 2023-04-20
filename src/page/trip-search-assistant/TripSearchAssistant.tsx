@@ -4,35 +4,28 @@ import TripSearch from "../../model/TripSearch";
 import withRouter from "../../helper/WithRouter";
 import ChatThread from "../../model/ChatThread";
 import Chat from "../../component/chat/Chat";
-import {Box, Container, MenuItem, Select} from "@mui/material";
+import {Box, Container} from "@mui/material";
 import SearchAssistantStep from "../../model/SearchAssistantStep";
 import ChatMessage from "../../model/ChatMessage";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import TripType from "../../model/TripType";
 import Destination from "../../model/Destination";
 import {Hotel, LocalAirport, LocationCity, LocationOn} from "@mui/icons-material";
 import SearchInput from "../../component/search-input/SearchInput";
 import SearchApiService from "../../service/SearchApiService";
 import DestinationType from "../../model/DestinationType";
 import Nameable from "../../model/Nameable";
-import DurationType from "../../model/DurationType";
-import PeriodType from "../../model/PeriodType";
-import DatePicker from "react-datepicker";
-import CompanionsSelect from "../../component/companions-select/CompanionsSelect";
-import TripTerms from "../../model/TripTerms";
 import Accommodation from "../../model/Accommodation";
 import {Navigate} from "react-router-dom";
 import Tag from "../../model/Tag";
 import "react-datepicker/dist/react-datepicker.css";
-import {SUPPORTED_LOCALES} from '../../App';
 import Progress from "../../component/progress/Progress";
 import {withTranslation} from "react-i18next";
 import AnswerYesNoType from "../../model/AnswerYesNoType";
-import DateHelper from "../../helper/DateHelper";
 import ReactGA from "react-ga4";
 import ChatResponse from "../../model/ChatResponse";
 import ChatMessageRole from "../../model/ChatMessageRole";
+import ChatOutcomeStatus from "../../model/ChatOutcomeStatus";
 
 class TripSearchAssistant extends Component<any, any> {
 
@@ -90,18 +83,6 @@ class TripSearchAssistant extends Component<any, any> {
         return 20;
       case SearchAssistantStep.open_chat:
         return 30;
-      case SearchAssistantStep.type_select:
-        return 60;
-      case SearchAssistantStep.period_known_select:
-        return 60;
-      case SearchAssistantStep.period_duration_select:
-        return 60;
-      case SearchAssistantStep.period_season_select:
-        return 60;
-      case SearchAssistantStep.period_dates_select:
-        return 60;
-      case SearchAssistantStep.companions_select:
-        return 60;
       case SearchAssistantStep.tags_select:
         return 75;
       case SearchAssistantStep.previous_locations_select:
@@ -123,8 +104,9 @@ class TripSearchAssistant extends Component<any, any> {
       currentStep: SearchAssistantStep.destination_known_select,
       loadingQuestion: false,
       currentInputValue: null,
-      companionsSelectOpen: false,
-      tags: []
+      tags: [],
+      currentOutcome: null,
+      currentStatus: null
     };
   }
 
@@ -156,26 +138,8 @@ class TripSearchAssistant extends Component<any, any> {
       case SearchAssistantStep.destination_known_select:
         this.handleDestinationOrTypeSubmit(this.state.currentInputValue);
         break;
-      case SearchAssistantStep.type_select:
-        this.handlePurposeSelect(this.state.currentInputValue);
-        break;
       case SearchAssistantStep.destination_select:
         this.handleDestinationSelect(this.state.currentInputValue);
-        break;
-      case SearchAssistantStep.period_known_select:
-        this.handlePeriodKnownSelect(this.state.currentInputValue);
-        break;
-      case SearchAssistantStep.period_duration_select:
-        this.handlePeriodDurationSubmit(this.state.currentInputValue);
-        break;
-      case SearchAssistantStep.period_season_select:
-        this.handlePeriodSeasonSubmit(this.state.currentInputValue);
-        break;
-      case SearchAssistantStep.period_dates_select:
-        this.handlePeriodDatesSubmit(this.state.currentInputValue);
-        break;
-      case SearchAssistantStep.companions_select:
-        this.handleCompanionsSubmit(this.state.currentInputValue);
         break;
       case SearchAssistantStep.tags_select:
         this.handleTagsSubmit(this.state.currentInputValue);
@@ -197,21 +161,27 @@ class TripSearchAssistant extends Component<any, any> {
 
   private getStepComponent(step: SearchAssistantStep) {
     const {t} = this.props;
-    const dateLocale = SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language : "en-US";
 
     if (this.state.loadingQuestion) {
       return <TextField className={"search-assistant-step-component"} disabled={true}></TextField>
     }
+
     switch (step) {
       case SearchAssistantStep.open_chat:
-        return <TextField
-          className={"search-assistant-step-component"}
+        return <Autocomplete
+          freeSolo={this.state.currentStatus !== ChatOutcomeStatus.exceeded}
+          componentsProps={{popper: {placement: "top-start"}}}
           id="search-assistant-open-chat-input"
           key="search-assistant-open-chat-input"
-          autoFocus
-          value={undefined}
-          onChange={(e) => this.setState({currentInputValue: e.target.value as string})}
-          onKeyDownCapture={e => this.handleInputKeyPress(e)}></TextField>
+          className={"search-assistant-step-component"}
+          onChange={(e, v) => this.setState({ currentInputValue: v as string})}
+          options={[this.getOpenChatInputOptions()]}
+          autoHighlight={true}
+          autoSelect={true}
+          renderInput={(params) => <TextField {...params}
+                                              autoFocus
+                                              onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
+        />
       case SearchAssistantStep.destination_known_select:
         return <Autocomplete
           freeSolo
@@ -227,20 +197,6 @@ class TripSearchAssistant extends Component<any, any> {
                                               autoFocus
                                               onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
         />
-      case SearchAssistantStep.type_select:
-        return <Select
-          id="search-assistant-purpose"
-          className={"search-assistant-step-component"}
-          autoFocus
-          value={undefined}
-          onChange={(e) => this.setState({currentInputValue: e.target.value as TripType})}
-          onKeyDownCapture={e => this.handleInputKeyPress(e)}>
-          <MenuItem value={TripType.beach}>{t('type.tripType.BEACH')}</MenuItem>
-          <MenuItem value={TripType.city}>{t('type.tripType.CITY')}</MenuItem>
-          <MenuItem value={TripType.sightseeing}>{t('type.tripType.SIGHTSEEING')}</MenuItem>
-          <MenuItem value={TripType.mountain}>{t('type.tripType.MOUNTAIN')}</MenuItem>
-          <MenuItem value={TripType.ski}>{t('type.tripType.SKI')}</MenuItem>
-        </Select>;
       case SearchAssistantStep.destination_select:
         return <SearchInput
           label={undefined}
@@ -251,83 +207,6 @@ class TripSearchAssistant extends Component<any, any> {
           keyDownHandler={e => this.handleInputKeyPress(e)}
           initialOptions={this.state.tripSearch?.tripDetails.destination ? [this.state.tripSearch.tripDetails.destination] : []}
           optionComponentGenerator={(props, option) => this.generateDestinationOption(props, option as Destination)}/>;
-      case SearchAssistantStep.period_known_select:
-        return <Autocomplete
-          componentsProps={{popper: {placement: "top-start"}}}
-          id="search-assistant-period-known-select"
-          key="search-assistant-period-known-seledisablePortalct"
-          defaultValue={null}
-          value={null}
-          className={"search-assistant-step-component"}
-          onChange={(e, v) => this.setState({ currentInputValue: v as string})}
-          options={[AnswerYesNoType.yes, AnswerYesNoType.no]}
-          getOptionLabel={o => t('type.answerYesNoType.' + o)}
-          autoHighlight={true}
-          renderInput={(params) => <TextField {...params} autoFocus onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
-        />;
-      case SearchAssistantStep.period_duration_select:
-        return <Autocomplete
-          componentsProps={{popper: {placement: "top-start"}}}
-          id="search-assistant-period-duration-select"
-          key="search-assistant-period-duration-select"
-          className={"search-assistant-step-component"}
-          onChange={(e, v) => this.setState({ currentInputValue: v as DurationType})}
-          options={[DurationType.weekend, DurationType.week, DurationType.month]}
-          getOptionLabel={option => t('type.durationType.' + option)}
-          autoHighlight={true}
-          renderInput={(params) => <TextField {...params} onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
-        />
-      case SearchAssistantStep.period_season_select:
-        return <Autocomplete
-          componentsProps={{popper: {placement: "top-start"}}}
-          id="search-assistant-period-season-select"
-          key="search-assistant-period-season-select"
-          className={"search-assistant-step-component"}
-          onChange={(e, v) => this.setState({ currentInputValue: v as PeriodType})}
-          options={[PeriodType.summer, PeriodType.fall, PeriodType.winter, PeriodType.spring]}
-          getOptionLabel={option => t('type.periodType.' + option)}
-          autoHighlight={true}
-          renderInput={(params) => <TextField {...params} autoFocus onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
-        />;
-      case SearchAssistantStep.period_dates_select:
-        return (
-          <DatePicker
-            autoFocus
-            key="search-assistant-dates-select"
-            className={"search-assistant-step-component"}
-            popperClassName={"search-assistant-dates-select"}
-            minDate={new Date()}
-            selected={this.state.currentInputValue && this.state.currentInputValue.length ? this.state.currentInputValue[0] : null}
-            onChange={(dates: [Date | null, Date | null]) => this.setState({ currentInputValue: dates})}
-            startDate={this.state.currentInputValue && this.state.currentInputValue.length ? this.state.currentInputValue[0] : null}
-            endDate={this.state.currentInputValue && this.state.currentInputValue.length ? this.state.currentInputValue[1] : null}
-            selectsRange
-            dateFormat={DateHelper.getDateFormatString(dateLocale)}
-            locale={SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language.split('-')[0] : "en"}
-            customInput={<TextField placeholder={undefined}
-                                    autoFocus
-                                    style={{width: '100%'}}
-                                    onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
-          />
-        )
-      case SearchAssistantStep.companions_select:
-        let companionsSelectOpen = this.state.companionsSelectOpen;
-        return <>
-          { companionsSelectOpen ? <div className={"search-assistant-companions-wrapper"}>
-            <div ref={this.companionsWrapperRef} className="search-assistant-companions-select"><CompanionsSelect
-              initialValueExtractor={() => this.state.tripSearch.tripTerms}
-              onValueChange={(v: TripTerms) => this.setState({ currentInputValue: v as TripTerms})}>
-            </CompanionsSelect></div></div> : null }
-          <TextField
-            autoFocus
-            className={"search-assistant-step-component"}
-            value={this.getCompanionsDisplay(this.state.currentInputValue)}
-            onClick={e => this.setState({ companionsSelectOpen: true}) }
-            onKeyDownCapture={e => {
-              this.setState({ companionsSelectOpen: false})
-              this.handleInputKeyPress(e);
-            }}></TextField>
-        </>;
       case SearchAssistantStep.tags_select:
         return <Autocomplete
           multiple
@@ -385,82 +264,6 @@ class TripSearchAssistant extends Component<any, any> {
     }
   }
 
-  private handlePeriodKnownSelect(value: AnswerYesNoType) {
-    if (AnswerYesNoType.yes === value) {
-      this.handleAnswerSubmit(SearchAssistantStep.period_dates_select, this.props.t('type.answerYesNoType.YES'));
-    } else if (AnswerYesNoType.no === value) {
-      this.handleAnswerSubmit(SearchAssistantStep.period_duration_select, this.props.t('type.answerYesNoType.NO'));
-    }
-  }
-
-  private handlePeriodDurationSubmit(value: DurationType) {
-    const tripTerms = {
-      ...this.state.tripSearch.tripTerms,
-      duration: value,
-      startDate: undefined,
-      endDate: undefined
-    };
-    this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        tripTerms: tripTerms
-      }
-    });
-    this.handleAnswerSubmit(SearchAssistantStep.period_season_select, this.props.t('type.durationType.' + value));
-  }
-
-  private handlePeriodSeasonSubmit(value: PeriodType) {
-    const tripTerms = {
-      ...this.state.tripSearch.tripTerms,
-      period: value,
-      startDate: undefined,
-      endDate: undefined
-    };
-    this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        tripTerms: tripTerms
-      }
-    });
-    this.handleAnswerSubmit(SearchAssistantStep.companions_select, this.props.t('type.periodType.' + value));
-  }
-
-  private handlePeriodDatesSubmit(value: Date[]) {
-    const start = value && value[0] ? value[0] : undefined;
-    const end = value && value[1] ? value[1] : undefined;
-
-    if (!start || !end || start > end) {
-      return;
-    }
-
-    const newValue = {
-      ...this.state.tripSearch.tripTerms,
-      startDate: start,
-      endDate: end,
-      period: undefined,
-      duration: undefined
-    };
-    this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        tripTerms: newValue
-      }
-    });
-
-    const dateLocale = SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language : "en-US";
-    this.handleAnswerSubmit(SearchAssistantStep.companions_select,  DateHelper.formatDateRange(start, end, dateLocale));
-  }
-
-  private handleCompanionsSubmit(value: TripTerms) {
-    this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        tripTerms: value
-      }
-    });
-    this.handleAnswerSubmit(SearchAssistantStep.tags_select, this.getCompanionsDisplay(value));
-  }
-
   private handleTagsSubmit(value: Tag[]) {
     const tags = {
       ...this.state.tripSearch.tags,
@@ -489,24 +292,6 @@ class TripSearchAssistant extends Component<any, any> {
     this.handleAnswerSubmit(SearchAssistantStep.complete, value.map(l => l.name).join(', '));
   }
 
-  private getCompanionsDisplay(value: TripTerms) {
-    return value ? value.adults + ' ' + this.props.t('companions.adults') + ', ' + value.children + ' ' + this.props.t('companions.children') : '';
-  }
-
-  private handlePurposeSelect(value: TripType) {
-    const tripDetails = {
-      ...this.state.tripSearch.tripDetails,
-      category: value
-    };
-    this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        tripDetails: tripDetails
-      }
-    });
-    this.handleAnswerSubmit(SearchAssistantStep.period_known_select, this.props.t('type.tripType.' + value));
-  }
-
   private generateDestinationOption(props: any, option: Destination): ReactElement {
     return (<Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
       { this.getDestinationTypeIcon(option.type) }
@@ -528,9 +313,16 @@ class TripSearchAssistant extends Component<any, any> {
   }
 
   private handleOpenChatSubmit(answer: string) {
+    if (this.props.t('assistant.chat.answer.suggest_search') === answer) {
+      const nextStep = this.state.currentOutcome?.accommodations?.length > 20 ? SearchAssistantStep.tags_select : SearchAssistantStep.complete;
+      this.handleAnswerSubmit(nextStep, answer);
+      return;
+    }
+
     this.setState({ loadingQuestion: true, currentStep: SearchAssistantStep.open_chat });
     this.addAnswer(answer);
     const messages = this.state.thread.messages.slice(1, this.state.thread.messages.length);
+
     this.searchApiService.processChat(messages)
       .then(response => this.processOpenChatResponse(response))
       .finally(() => this.setState({ loadingQuestion: false }));
@@ -551,7 +343,15 @@ class TripSearchAssistant extends Component<any, any> {
     const text = response.message?.content ? response.message?.content : '';
     const message = new ChatMessage(ChatMessageRole.assistant, text);
     currentThread.messages.push(message);
-    this.setState({ thread: currentThread });
+    this.setState({ thread: currentThread, currentOutcome: response.outcome, currentStatus: response.status });
+  }
+
+  private getOpenChatInputOptions() {
+    if (this.state.currentStatus === ChatOutcomeStatus.complete || this.state.currentStatus === ChatOutcomeStatus.exceeded) {
+      return [this.props.t('assistant.chat.answer.suggest_search')];
+    } else {
+      return [];
+    }
   }
 
   private addAssistantQuestion(step: SearchAssistantStep) {

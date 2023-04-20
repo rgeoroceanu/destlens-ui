@@ -29,7 +29,7 @@
     },
     "answerYesNoType": {
       "YES": "Da",
-      "NO": "Nu"
+      "NO": "Nu, am nevoie de ajutor sa ma decid"
     }
   },
   "companions": {
@@ -77,6 +77,9 @@
         "tags_select": "Alege acum cateva lucruri care ai vrea sa le includa hotelul in care vei sta.",
         "previous_locations_select": "Alege cateva hoteluri unde ai stat in trecut. Asta ne va ajuta sa gasim cea mai potrivita vacanta pentru tine.",
         "complete": "Felicitari!"
+      },
+      "answer": {
+        "suggest_complete": "Incepe cautarea de hoteluri bazata pe aceste preferinte."
       }
     }
   }

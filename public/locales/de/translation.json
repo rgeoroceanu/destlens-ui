@@ -29,7 +29,7 @@
     },
     "answerYesNoType": {
       "YES": "Ja",
-      "NO": "Nein"
+      "NO": "Nein, ich brauche Hilfe"
     }
   },
   "companions": {
@@ -77,6 +77,9 @@
         "tags_select": "Lass uns nun einige Stichwörte auswählen, die auf die Suche angewendet werden sollen.",
         "previous_locations_select": "Gib ein paar Orte ein, an denen du dich in der Vergangenheit gerne aufgehalten hast. Dies wird dir sehr helfen, die besten Ergebnisse für deinen persönlichen Geschmack zu finden.",
         "complete": "Herzlichen Glückwunsch! Du hast alle Schritte abgeschlossen! Jetzt suche ich etwas Passendes nur für dich!"
+      },
+      "answer": {
+        "suggest_complete": "Suche starten basiert auf diese."
       }
     }
   }

@@ -29,7 +29,7 @@
     },
     "answerYesNoType": {
       "YES": "Yes",
-      "NO": "No"
+      "NO": "No, please help me decide..."
     }
   },
   "companions": {
@@ -76,7 +76,10 @@
         "companions_select": "Who do you plan to travel with?",
         "tags_select": "Now let's select some things that you would like to be included at your accommodation.",
         "previous_locations_select": "Enter a few locations where did you enjoyed staying in the past. This will help a lot in finding the best results for your personal tastes.",
-        "complete": "Congrats! You completed all the steps! Now I will find something suitable just for you!"
+
+      },
+      "answer": {
+        "suggest_complete": "Finde Unterkünfte für mich basierend auf diesen Präferenzen."
       }
     }
   }

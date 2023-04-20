@@ -31,6 +31,8 @@ import {withTranslation} from "react-i18next";
 import AnswerYesNoType from "../../model/AnswerYesNoType";
 import DateHelper from "../../helper/DateHelper";
 import ReactGA from "react-ga4";
+import ChatResponse from "../../model/ChatResponse";
+import ChatMessageRole from "../../model/ChatMessageRole";
 
 class TripSearchAssistant extends Component<any, any> {
 
@@ -72,7 +74,6 @@ class TripSearchAssistant extends Component<any, any> {
             inputComponent={component}
             sendClickListener={() => this.handleSubmitAnswer()}
             restartClickListener={() => this.handleRestart()}
-            previousClickListener={() => this.handlePrevious()}
             skipClickListener={() => this.handleSkip()}
             skipButtonVisible={this.state.currentStep===SearchAssistantStep.tags_select || this.state.currentStep===SearchAssistantStep.previous_locations_select }>
           </Chat>
@@ -85,18 +86,20 @@ class TripSearchAssistant extends Component<any, any> {
     switch (step) {
       case SearchAssistantStep.destination_known_select:
         return 10;
-      case SearchAssistantStep.type_select:
-        return 20;
       case SearchAssistantStep.destination_select:
         return 20;
-      case SearchAssistantStep.period_known_select:
+      case SearchAssistantStep.open_chat:
         return 30;
+      case SearchAssistantStep.type_select:
+        return 60;
+      case SearchAssistantStep.period_known_select:
+        return 60;
       case SearchAssistantStep.period_duration_select:
-        return 45;
+        return 60;
       case SearchAssistantStep.period_season_select:
-        return 55;
+        return 60;
       case SearchAssistantStep.period_dates_select:
-        return 45;
+        return 60;
       case SearchAssistantStep.companions_select:
         return 60;
       case SearchAssistantStep.tags_select:
@@ -111,7 +114,7 @@ class TripSearchAssistant extends Component<any, any> {
   private getInitialState() {
     const tripSearch = new TripSearch();
     const chatThread = new ChatThread();
-    const message = new ChatMessage(false, this.props.t('assistant.chat.question.destination_known_select'));
+    const message = new ChatMessage(ChatMessageRole.assistant, this.props.t('assistant.chat.question.destination_known_select'));
     chatThread.messages.push(message);
 
     return {
@@ -129,50 +132,6 @@ class TripSearchAssistant extends Component<any, any> {
     this.setState(this.getInitialState());
   }
 
-  private handlePrevious() {
-    let previousStep = SearchAssistantStep.destination_known_select;
-    switch (this.state.currentStep) {
-      case SearchAssistantStep.destination_known_select:
-        previousStep = SearchAssistantStep.destination_known_select;
-        break;
-      case SearchAssistantStep.type_select:
-        previousStep = SearchAssistantStep.destination_known_select;
-        break;
-      case SearchAssistantStep.destination_select:
-        previousStep = SearchAssistantStep.destination_known_select;
-        break;
-      case SearchAssistantStep.period_known_select:
-        previousStep = SearchAssistantStep.destination_known_select;
-        break;
-      case SearchAssistantStep.period_duration_select:
-        previousStep = SearchAssistantStep.period_known_select;
-        break;
-      case SearchAssistantStep.period_season_select:
-        previousStep = SearchAssistantStep.period_duration_select;
-        break;
-      case SearchAssistantStep.period_dates_select:
-        previousStep = SearchAssistantStep.period_known_select;
-        break;
-      case SearchAssistantStep.companions_select:
-        previousStep = SearchAssistantStep.period_known_select;
-        break;
-      case SearchAssistantStep.tags_select:
-        previousStep = SearchAssistantStep.companions_select;
-        break;
-      case SearchAssistantStep.previous_locations_select:
-        previousStep = SearchAssistantStep.tags_select;
-        break;
-      default:
-    }
-    const thread = this.state.thread;
-    thread.messages.pop();
-    this.setState({ loadingQuestion: true });
-    setTimeout(() => {
-      this.addAssistantQuestion(previousStep);
-      this.setState({ currentInputValue: undefined, currentStep: previousStep, thread: thread, loadingQuestion: false });
-    }, 1000);
-  }
-
   private handleSkip() {
     this.setState({ currentInputValue: undefined });
     this.addAnswer('(Step skipped)');
@@ -183,7 +142,6 @@ class TripSearchAssistant extends Component<any, any> {
       default:
         this.setState({ currentStep: SearchAssistantStep.complete});
     }
-
   }
 
   private handleSubmitAnswer() {
@@ -192,6 +150,9 @@ class TripSearchAssistant extends Component<any, any> {
     }
     const step = this.state.currentStep;
     switch (step) {
+      case SearchAssistantStep.open_chat:
+        this.handleOpenChatSubmit(this.state.currentInputValue);
+        break;
       case SearchAssistantStep.destination_known_select:
         this.handleDestinationOrTypeSubmit(this.state.currentInputValue);
         break;
@@ -242,8 +203,18 @@ class TripSearchAssistant extends Component<any, any> {
       return <TextField className={"search-assistant-step-component"} disabled={true}></TextField>
     }
     switch (step) {
+      case SearchAssistantStep.open_chat:
+        return <TextField
+          className={"search-assistant-step-component"}
+          id="search-assistant-open-chat-input"
+          key="search-assistant-open-chat-input"
+          autoFocus
+          value={undefined}
+          onChange={(e) => this.setState({currentInputValue: e.target.value as string})}
+          onKeyDownCapture={e => this.handleInputKeyPress(e)}></TextField>
       case SearchAssistantStep.destination_known_select:
         return <Autocomplete
+          freeSolo
           componentsProps={{popper: {placement: "top-start"}}}
           id="search-assistant-destination-or-type-select"
           key="search-assistant-destination-or-type-select"
@@ -252,12 +223,15 @@ class TripSearchAssistant extends Component<any, any> {
           options={[AnswerYesNoType.yes, AnswerYesNoType.no]}
           getOptionLabel={o => t('type.answerYesNoType.' + o)}
           autoHighlight={true}
-          renderInput={(params) => <TextField {...params} onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
+          renderInput={(params) => <TextField {...params}
+                                              autoFocus
+                                              onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
         />
       case SearchAssistantStep.type_select:
         return <Select
           id="search-assistant-purpose"
           className={"search-assistant-step-component"}
+          autoFocus
           value={undefined}
           onChange={(e) => this.setState({currentInputValue: e.target.value as TripType})}
           onKeyDownCapture={e => this.handleInputKeyPress(e)}>
@@ -289,7 +263,7 @@ class TripSearchAssistant extends Component<any, any> {
           options={[AnswerYesNoType.yes, AnswerYesNoType.no]}
           getOptionLabel={o => t('type.answerYesNoType.' + o)}
           autoHighlight={true}
-          renderInput={(params) => <TextField {...params} onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
+          renderInput={(params) => <TextField {...params} autoFocus onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
         />;
       case SearchAssistantStep.period_duration_select:
         return <Autocomplete
@@ -313,11 +287,12 @@ class TripSearchAssistant extends Component<any, any> {
           options={[PeriodType.summer, PeriodType.fall, PeriodType.winter, PeriodType.spring]}
           getOptionLabel={option => t('type.periodType.' + option)}
           autoHighlight={true}
-          renderInput={(params) => <TextField {...params} onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
+          renderInput={(params) => <TextField {...params} autoFocus onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
         />;
       case SearchAssistantStep.period_dates_select:
         return (
           <DatePicker
+            autoFocus
             key="search-assistant-dates-select"
             className={"search-assistant-step-component"}
             popperClassName={"search-assistant-dates-select"}
@@ -330,6 +305,7 @@ class TripSearchAssistant extends Component<any, any> {
             dateFormat={DateHelper.getDateFormatString(dateLocale)}
             locale={SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language.split('-')[0] : "en"}
             customInput={<TextField placeholder={undefined}
+                                    autoFocus
                                     style={{width: '100%'}}
                                     onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
           />
@@ -343,6 +319,7 @@ class TripSearchAssistant extends Component<any, any> {
               onValueChange={(v: TripTerms) => this.setState({ currentInputValue: v as TripTerms})}>
             </CompanionsSelect></div></div> : null }
           <TextField
+            autoFocus
             className={"search-assistant-step-component"}
             value={this.getCompanionsDisplay(this.state.currentInputValue)}
             onClick={e => this.setState({ companionsSelectOpen: true}) }
@@ -363,7 +340,7 @@ class TripSearchAssistant extends Component<any, any> {
           getOptionLabel={(tag: Tag) => tag.name as string}
           autoHighlight={true}
           renderInput={(params) => (
-            <TextField{...params} onKeyDownCapture={e => this.handleInputKeyPress(e)}/>
+            <TextField{...params} autoFocus onKeyDownCapture={e => this.handleInputKeyPress(e)}/>
           )}
         />;
       case SearchAssistantStep.previous_locations_select:
@@ -397,14 +374,14 @@ class TripSearchAssistant extends Component<any, any> {
         tripDetails: tripDetails
       }
     });
-    this.handleAnswerSubmit(SearchAssistantStep.period_known_select, dest.name);
+    this.handleOpenChatSubmit(dest.name);
   }
 
-  private handleDestinationOrTypeSubmit(value: AnswerYesNoType) {
+  private handleDestinationOrTypeSubmit(value: string) {
     if (AnswerYesNoType.yes === value) {
       this.handleAnswerSubmit(SearchAssistantStep.destination_select, this.props.t('type.answerYesNoType.YES'));
-    } else if (AnswerYesNoType.no === value) {
-      this.handleAnswerSubmit(SearchAssistantStep.type_select, this.props.t('type.answerYesNoType.NO'));
+    } else {
+      this.handleOpenChatSubmit(this.props.t('type.answerYesNoType.NO'));
     }
   }
 
@@ -550,6 +527,15 @@ class TripSearchAssistant extends Component<any, any> {
     }
   }
 
+  private handleOpenChatSubmit(answer: string) {
+    this.setState({ loadingQuestion: true, currentStep: SearchAssistantStep.open_chat });
+    this.addAnswer(answer);
+    const messages = this.state.thread.messages.slice(1, this.state.thread.messages.length);
+    this.searchApiService.processChat(messages)
+      .then(response => this.processOpenChatResponse(response))
+      .finally(() => this.setState({ loadingQuestion: false }));
+  }
+
   private handleAnswerSubmit(nextStep: SearchAssistantStep, answer: string) {
     this.setState({ loadingQuestion: true, currentStep: nextStep });
     this.addAnswer(answer);
@@ -560,17 +546,25 @@ class TripSearchAssistant extends Component<any, any> {
     }, 300);
   }
 
+  private processOpenChatResponse(response: ChatResponse) {
+    const currentThread = this.state.thread;
+    const text = response.message?.content ? response.message?.content : '';
+    const message = new ChatMessage(ChatMessageRole.assistant, text);
+    currentThread.messages.push(message);
+    this.setState({ thread: currentThread });
+  }
+
   private addAssistantQuestion(step: SearchAssistantStep) {
     const currentThread = this.state.thread;
     const text = this.props.t('assistant.chat.question.' + SearchAssistantStep[step]);
-    const message = new ChatMessage(false, text);
+    const message = new ChatMessage(ChatMessageRole.assistant, text);
     currentThread.messages.push(message);
     this.setState({ thread: currentThread });
   }
 
   private addAnswer(answer: string) {
     const currentThread = this.state.thread;
-    const message = new ChatMessage(true, answer);
+    const message = new ChatMessage(ChatMessageRole.user, answer);
     currentThread.messages.push(message);
     this.setState({ thread: currentThread });
   }

@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import './Chat.css';
 import ChatMessage from "../../model/ChatMessage";
 import TextField from "@mui/material/TextField";
-import {FastRewind, Refresh, Send, SkipNext} from "@mui/icons-material";
+import {Refresh, Send, SkipNext} from "@mui/icons-material";
 import {TypeAnimation} from "react-type-animation";
 import {Button, IconButton} from "@mui/material";
 import {withTranslation} from "react-i18next";
+import ChatMessageRole from "../../model/ChatMessageRole";
 
 class Chat extends Component<any, any> {
 
@@ -15,7 +16,6 @@ class Chat extends Component<any, any> {
     const loading = this.props.loading ? this.props.loading : false;
     const sendClickListener = this.props.sendClickListener ? this.props.sendClickListener : undefined;
     const restartClickListener = this.props.restartClickListener ? this.props.restartClickListener : undefined;
-    const previousClickListener = this.props.previousClickListener ? this.props.previousClickListener : undefined;
     const skipClickListener = this.props.skipClickListener ? this.props.skipClickListener : undefined;
     const skipButtonVisible = this.props.skipButtonVisible;
     return (
@@ -29,13 +29,6 @@ class Chat extends Component<any, any> {
                                              variant="outlined"
                                              startIcon={<Refresh />}>
               <span className={"chat-state-button-label"}>{t('general.restart')}</span>
-            </Button> : null }
-            { previousClickListener ? <Button onClick={previousClickListener}
-                                              color="primary"
-                                              className={"chat-state-button"}
-                                              variant="outlined"
-                                              startIcon={<FastRewind />}>
-              <span className={"chat-state-button-label"}>{t('general.previous')}</span>
             </Button> : null }
             { skipClickListener && skipButtonVisible ? <Button onClick={skipClickListener}
                                               color="primary"
@@ -92,8 +85,8 @@ class Chat extends Component<any, any> {
   private getMessageComponent(message: ChatMessage, index: number) {
     return <div id={"chat-message-" + index}
                 key={"chat-message-" + index}
-                className={"chat-message " + (message.own ? "chat-message-own" : "chat-message-another")}>
-      {message.text}
+                className={"chat-message " + (message.role === ChatMessageRole.user ? "chat-message-own" : "chat-message-another")}>
+      {message.content}
     </div>
   }
 }

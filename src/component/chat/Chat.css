@@ -77,12 +77,7 @@
 
 
 @media (max-width: 599px) {
-    .chat-state-button .MuiButton-startIcon {
-        margin-right: 0 !important;
-    }
-    .chat-state-button-label {
-        display: none !important;
-    }
+
 }
 
 

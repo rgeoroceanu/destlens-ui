@@ -6,16 +6,26 @@ import TagCategory from "../model/TagCategory";
 import AccommodationMatch from "../model/AccommodationMatch";
 import MatchResult from "../model/MatchResult";
 import Tag from "../model/Tag";
+import ChatMessage from "../model/ChatMessage";
+import ChatResponse from "../model/ChatResponse";
 
 class SearchApiService {
 
   private http = axios.create({
-    //baseURL: "http://localhost:8080/",
-    baseURL: "https://api.tripwizard.io/",
+    baseURL: "http://localhost:8080/",
+    //baseURL: "https://api.tripwizard.io/",
     headers: {
       "Content-Type": "application/json"
     }
   });
+
+  processChat(messages: ChatMessage[]): Promise<ChatResponse> {
+    const request = {
+      messages: messages
+    };
+    return this.http.post<ChatResponse>("/chat", request)
+      .then(res => res.data);
+  }
 
   searchDestination(text: string): Promise<Array<Destination>> {
     return this.http.get<Array<Destination>>("/destination/search", {params: {text: text}})

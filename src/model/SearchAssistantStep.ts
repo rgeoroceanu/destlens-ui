@@ -1,4 +1,5 @@
 enum SearchAssistantStep {
+  open_chat,
   destination_known_select,
   destination_select,
   type_select,

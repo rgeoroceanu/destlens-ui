@@ -1,10 +1,12 @@
-class ChatMessage {
-  own: boolean = true;
-  text: string = '';
+import ChatMessageRole from "./ChatMessageRole";
 
-  constructor(own: boolean, text: string) {
-    this.own = own;
-    this.text = text;
+class ChatMessage {
+  role: ChatMessageRole = ChatMessageRole.user;
+  content: string = '';
+
+  constructor(role: ChatMessageRole, text: string) {
+    this.role = role;
+    this.content = text;
   }
 }
 

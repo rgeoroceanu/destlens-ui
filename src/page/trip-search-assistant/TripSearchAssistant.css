@@ -6,6 +6,7 @@
     width: 100%;
     position: absolute;
     bottom: 80px;
+    left: -50vw;
 }
 
 .search-assistant-companions-select {
@@ -15,7 +16,7 @@
 }
 
 .search-assistant-dates-select {
-    inset: auto auto 80px calc(50% - 120px) !important;
+    inset: auto auto 80px -50vw !important;
     transform: unset !important;
 }
 
@@ -30,4 +31,8 @@
 
 .react-datepicker__header {
     background-color: transparent;
+}
+
+.search-assistant-companions-select .MuiInputBase-root {
+    padding-right: 6px !important;
 }

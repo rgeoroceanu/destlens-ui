@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import './CompanionsSelect.css';
-import TripTerms from "../../model/TripTerms";
+import TripCompanions from "../../model/TripCompanions";
 import {FormControlLabel} from "@mui/material";
 import NumberInput from "../number-input/NumberInput";
 import {withTranslation} from "react-i18next";
 
 interface CompanionsSelectConfig extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
-  onValueChange: (value: TripTerms) => void,
-  initialValueExtractor?: () => TripTerms
+  onValueChange: (value: TripCompanions) => void,
+  initialValueExtractor?: () => TripCompanions
 }
 
 class CompanionsSelect extends Component<any, any> {
@@ -18,7 +18,6 @@ class CompanionsSelect extends Component<any, any> {
     this.state = {
       currentValue: initialValue,
     }
-    this.props.onValueChange(initialValue);
   }
 
   render() {

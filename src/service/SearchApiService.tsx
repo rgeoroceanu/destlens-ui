@@ -1,19 +1,17 @@
 import axios from "axios";
 import Destination from "../model/Destination";
 import Accommodation from "../model/Accommodation";
-import TripSearch from "../model/TripSearch";
 import TagCategory from "../model/TagCategory";
-import AccommodationMatch from "../model/AccommodationMatch";
-import MatchResult from "../model/MatchResult";
 import Tag from "../model/Tag";
 import ChatMessage from "../model/ChatMessage";
 import ChatResponse from "../model/ChatResponse";
+import ChatOutcome from "../model/ChatOutcome";
 
 class SearchApiService {
 
   private http = axios.create({
-    baseURL: "http://localhost:8080/",
-    //baseURL: "https://api.tripwizard.io/",
+    //baseURL: "http://localhost:8080/",
+    baseURL: "https://api.tripwizard.io/",
     headers: {
       "Content-Type": "application/json"
     }
@@ -37,30 +35,20 @@ class SearchApiService {
       .then(res => res.data);
   }
 
-  findMatchingAccommodations(tripSearch: TripSearch): Promise<AccommodationMatch[]> {
-    const checkinDate = tripSearch.tripTerms?.startDate;
-    const checkoutDate = tripSearch.tripTerms?.endDate;
+  findMatchingAccommodations(outcome: ChatOutcome): Promise<Accommodation[]> {
     const request = {
-      destinationId: tripSearch.tripDetails.destination?.externalId,
-      purpose: tripSearch.tripDetails?.category,
-      period: tripSearch.tripTerms?.period,
-      duration: tripSearch.tripTerms?.duration,
-      accommodationSearch: tripSearch.tripDetails?.accommodation,
-      flightSearch: tripSearch.tripDetails?.flight,
-      transferSearch: tripSearch.tripDetails?.transfer,
-      carRentalSearch: tripSearch.tripDetails?.carRental,
-      checkinDate: this.formatDate(checkinDate),
-      checkoutDate: this.formatDate(checkoutDate),
-      adults: tripSearch.tripTerms?.adults,
-      children: tripSearch.tripTerms?.children,
-      childrenAges: tripSearch.tripTerms?.childrenAges,
-      rooms: tripSearch.tripTerms?.rooms,
-      previousAccommodationIds: tripSearch.previousLocations?.locations.map(l => l.externalId),
-      tags: tripSearch.tags?.tags ? Array.from(tripSearch.tags?.tags) : [],
-    };
-
-    return this.http.post<MatchResult>("/accommodation/matching", request)
-      .then(res => res.data.accommodationMatches);
+      budgetValue: outcome.budgetValue,
+      destinations: outcome.destinations,
+      period: outcome.period,
+      adults: outcome.adults,
+      children: outcome.children,
+      childrenAges: outcome.childrenAges,
+      accommodations: outcome.accommodations,
+      budgetCurrency: outcome.budgetCurrency,
+      tags: outcome.tags,
+    }
+    return this.http.post<Accommodation[]>("/accommodation/matching", request)
+      .then(res => res.data);
   }
 
   public getAllTags(): Promise<Tag[]> {

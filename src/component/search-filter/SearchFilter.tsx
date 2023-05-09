@@ -4,7 +4,7 @@ import {Box, Button, FormControl, InputLabel, Link, MenuItem, Select} from "@mui
 import TripSearch from "../../model/TripSearch";
 import TripType from "../../model/TripType";
 import PeriodType from "../../model/PeriodType";
-import TripTerms from "../../model/TripTerms";
+import TripCompanions from "../../model/TripCompanions";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import SearchApiService from "../../service/SearchApiService";
@@ -158,7 +158,7 @@ class SearchFilter extends Component<any, any> {
           { companionsSelectOpen ? <CompanionsSelect
               className="search-filter-companions-select"
               initialValueExtractor={() => this.state.currentValue.tripTerms}
-              onValueChange={(v: TripTerms) => this.handleCompanionsChange(v as TripTerms)}>
+              onValueChange={(v: TripCompanions) => this.handleCompanionsChange(v as TripCompanions)}>
             </CompanionsSelect> : null }
         </div>
 
@@ -203,7 +203,7 @@ class SearchFilter extends Component<any, any> {
     );
   }
 
-  private getCompanionsDisplay(value: TripTerms) {
+  private getCompanionsDisplay(value: TripCompanions) {
     return value ? value.adults + ' ' + this.props.t('companions.adults') + ', ' + value.children + ' ' + this.props.t('companions.children') : '';
   }
 
@@ -211,7 +211,7 @@ class SearchFilter extends Component<any, any> {
     this.props.onValueChange(this.state.currentValue);
   }
 
-  private handleCompanionsChange(terms: TripTerms) {
+  private handleCompanionsChange(terms: TripCompanions) {
     this.setState({
       currentValue: {
         ...this.state.currentValue,

@@ -1,11 +1,11 @@
 import TripDetails from "./TripDetails";
-import TripTerms from "./TripTerms";
+import TripCompanions from "./TripCompanions";
 import PreviousLocations from "./PreviousLocations";
 import TripTags from "./TripTags";
 
 class TripSearch {
   tripDetails: TripDetails = new TripDetails();
-  tripTerms: TripTerms = new TripTerms();
+  tripTerms: TripCompanions = new TripCompanions();
   previousLocations: PreviousLocations = new PreviousLocations();
   tags: TripTags = new TripTags();
 }

@@ -79,7 +79,7 @@
         "complete": "Herzlichen Glückwunsch! Du hast alle Schritte abgeschlossen! Jetzt suche ich etwas Passendes nur für dich!"
       },
       "answer": {
-        "suggest_complete": "Suche starten basiert auf diese."
+        "suggest_search": "Suche starten basiert auf die Angaben."
       }
     }
   }

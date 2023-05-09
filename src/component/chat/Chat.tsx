@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import './Chat.css';
 import ChatMessage from "../../model/ChatMessage";
 import TextField from "@mui/material/TextField";
-import {Refresh, Send, SkipNext} from "@mui/icons-material";
+import {Refresh, Search, Send, SkipNext} from "@mui/icons-material";
 import {TypeAnimation} from "react-type-animation";
 import {Button, IconButton} from "@mui/material";
 import {withTranslation} from "react-i18next";
@@ -18,6 +18,8 @@ class Chat extends Component<any, any> {
     const restartClickListener = this.props.restartClickListener ? this.props.restartClickListener : undefined;
     const skipClickListener = this.props.skipClickListener ? this.props.skipClickListener : undefined;
     const skipButtonVisible = this.props.skipButtonVisible;
+    const searchClickListener = this.props.searchClickListener ? this.props.searchClickListener : undefined;
+    const searchButtonVisible = this.props.searchButtonVisible;
     return (
       <div className={"chat-wrapper"}>
         { this.getMessagesComponent(this.props.thread.messages, loading) }
@@ -36,6 +38,13 @@ class Chat extends Component<any, any> {
                                               variant="outlined"
                                               startIcon={<SkipNext />}>
               <span className={"chat-state-button-label"}>{t('general.skip')}</span>
+            </Button> : null }
+            { searchClickListener && searchButtonVisible ? <Button onClick={searchClickListener}
+                                                               color="primary"
+                                                               className={"chat-state-button"}
+                                                               variant="outlined"
+                                                               startIcon={<Search />}>
+              <span className={"chat-state-button-label"}>{t('general.search')}</span>
             </Button> : null }
           </div>
         }

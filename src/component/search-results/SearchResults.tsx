@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './SearchResults.css';
-import AccommodationMatch from "../../model/AccommodationMatch";
 import SearchResult from "../search-result/SearchResult";
+import Accommodation from "../../model/Accommodation";
 
 class SearchResults extends Component<any, any> {
 
@@ -14,10 +14,10 @@ class SearchResults extends Component<any, any> {
     );
   }
 
-  private getResultComponents(matches: AccommodationMatch[]) {
+  private getResultComponents(accommodations: Accommodation[]) {
     const components = [];
-    for (let i=0; i<matches.length; i++) {
-      const component = <SearchResult key={'result'+i} result={matches[i]} index={i}></SearchResult>
+    for (let i=0; i<accommodations.length; i++) {
+      const component = <SearchResult key={'result'+i} result={accommodations[i]} index={i}></SearchResult>
       components.push(component);
     }
     return components;

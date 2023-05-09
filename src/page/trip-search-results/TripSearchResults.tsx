@@ -2,15 +2,14 @@ import React, {Component} from 'react';
 import './TripSearchResults.css';
 import Progress from "../../component/progress/Progress";
 import {Container} from "@mui/material";
-import TripSearch from "../../model/TripSearch";
 import SearchResults from "../../component/search-results/SearchResults";
 import CircularProgress from "@mui/material/CircularProgress";
 import SearchApiService from "../../service/SearchApiService";
-import SearchFilter from "../../component/search-filter/SearchFilter";
 import withRouter from "../../helper/WithRouter";
-import AccommodationMatch from "../../model/AccommodationMatch";
 import {withTranslation} from "react-i18next";
 import ReactGA from "react-ga4";
+import ChatOutcome from "../../model/ChatOutcome";
+import Accommodation from "../../model/Accommodation";
 
 class TripSearchResults extends Component<any, any> {
 
@@ -27,7 +26,7 @@ class TripSearchResults extends Component<any, any> {
   componentDidMount() {
     ReactGA.send({ hitType: "pageview", page: "/trip-search-results", title: "Search Results" });
     if (this.state.searching === false) {
-      this.startSearch(this.props.location?.state?.tripSearch);
+      this.startSearch(this.props.location?.state?.outcome);
     }
   }
 
@@ -39,10 +38,6 @@ class TripSearchResults extends Component<any, any> {
         <Progress value={100}/>
         <div className={"content-scrollable"}>
           <Container className={"content-wrapper"}>
-            <SearchFilter onValueChange={(v: TripSearch) => this.startSearch(v)}
-                          initialValueExtractor={() => this.props.location?.state?.tripSearch}>
-            </SearchFilter>
-
             { this.state.searching ? this.getProgressComponent() :
               (results.length > 0 ? <SearchResults results={results}></SearchResults> : this.getNoResultsComponent()) }
           </Container>
@@ -63,20 +58,20 @@ class TripSearchResults extends Component<any, any> {
     </div>
   }
 
-  private startSearch(search: TripSearch) {
+  private startSearch(outcome: ChatOutcome) {
     this.setState({
       searching: true,
       results: []
     });
 
-    this.searchService.findMatchingAccommodations(search)
+    this.searchService.findMatchingAccommodations(outcome)
       .then(res => this.onMatchResults(res))
       .finally(() => this.setState({
         searching: false
       }));
   }
 
-  private onMatchResults(results: AccommodationMatch[]) {
+  private onMatchResults(results: Accommodation[]) {
     this.setState({results: results, searching: false})
   }
 

@@ -1,21 +1,19 @@
 import React, {Component, ReactElement} from 'react';
 import './TripSearchAssistant.css';
-import TripSearch from "../../model/TripSearch";
 import withRouter from "../../helper/WithRouter";
 import ChatThread from "../../model/ChatThread";
 import Chat from "../../component/chat/Chat";
-import {Box, Container} from "@mui/material";
+import {Box, Container, IconButton, InputAdornment} from "@mui/material";
 import SearchAssistantStep from "../../model/SearchAssistantStep";
 import ChatMessage from "../../model/ChatMessage";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Destination from "../../model/Destination";
-import {Hotel, LocalAirport, LocationCity, LocationOn} from "@mui/icons-material";
+import {CalendarMonth, Group, Hotel, LocalAirport, LocationCity, LocationOn} from "@mui/icons-material";
 import SearchInput from "../../component/search-input/SearchInput";
 import SearchApiService from "../../service/SearchApiService";
 import DestinationType from "../../model/DestinationType";
 import Nameable from "../../model/Nameable";
-import Accommodation from "../../model/Accommodation";
 import {Navigate} from "react-router-dom";
 import Tag from "../../model/Tag";
 import "react-datepicker/dist/react-datepicker.css";
@@ -26,6 +24,11 @@ import ReactGA from "react-ga4";
 import ChatResponse from "../../model/ChatResponse";
 import ChatMessageRole from "../../model/ChatMessageRole";
 import ChatOutcomeStatus from "../../model/ChatOutcomeStatus";
+import {SUPPORTED_LOCALES} from "../../App";
+import DatePicker from "react-datepicker";
+import DateHelper from "../../helper/DateHelper";
+import TripCompanions from "../../model/TripCompanions";
+import CompanionsSelect from "../../component/companions-select/CompanionsSelect";
 
 class TripSearchAssistant extends Component<any, any> {
 
@@ -68,7 +71,9 @@ class TripSearchAssistant extends Component<any, any> {
             sendClickListener={() => this.handleSubmitAnswer()}
             restartClickListener={() => this.handleRestart()}
             skipClickListener={() => this.handleSkip()}
-            skipButtonVisible={this.state.currentStep===SearchAssistantStep.tags_select || this.state.currentStep===SearchAssistantStep.previous_locations_select }>
+            skipButtonVisible={this.state.currentStep===SearchAssistantStep.tags_select }
+            searchClickListener={() => this.handleSearch()}
+            searchButtonVisible={this.state.currentStatus === ChatOutcomeStatus.complete || this.state.currentStatus === ChatOutcomeStatus.exceeded }>
           </Chat>
         </Container>
       </div>
@@ -82,31 +87,30 @@ class TripSearchAssistant extends Component<any, any> {
       case SearchAssistantStep.destination_select:
         return 20;
       case SearchAssistantStep.open_chat:
-        return 30;
+        return 50;
       case SearchAssistantStep.tags_select:
         return 75;
-      case SearchAssistantStep.previous_locations_select:
-        return 90;
       default:
         return 100;
     }
   }
 
   private getInitialState() {
-    const tripSearch = new TripSearch();
     const chatThread = new ChatThread();
     const message = new ChatMessage(ChatMessageRole.assistant, this.props.t('assistant.chat.question.destination_known_select'));
     chatThread.messages.push(message);
 
     return {
-      tripSearch: tripSearch,
       thread: chatThread,
       currentStep: SearchAssistantStep.destination_known_select,
       loadingQuestion: false,
-      currentInputValue: null,
+      currentInputValue: '',
       tags: [],
       currentOutcome: null,
-      currentStatus: null
+      currentStatus: null,
+      companionsSelectOpen: false,
+      currentDates: null,
+      currentCompanions: new TripCompanions()
     };
   }
 
@@ -119,15 +123,19 @@ class TripSearchAssistant extends Component<any, any> {
     this.addAnswer('(Step skipped)');
     switch (this.state.currentStep) {
       case SearchAssistantStep.tags_select:
-        this.setState({ currentStep: SearchAssistantStep.previous_locations_select});
+        this.setState({ currentStep: SearchAssistantStep.complete});
         break;
       default:
         this.setState({ currentStep: SearchAssistantStep.complete});
     }
   }
 
+  private handleSearch() {
+    this.setState({ currentStep: SearchAssistantStep.complete });
+  }
+
   private handleSubmitAnswer() {
-    if (!this.state.currentInputValue) {
+    if (!this.state.currentInputValue || this.state.currentInputValue === '') {
       return;
     }
     const step = this.state.currentStep;
@@ -144,13 +152,10 @@ class TripSearchAssistant extends Component<any, any> {
       case SearchAssistantStep.tags_select:
         this.handleTagsSubmit(this.state.currentInputValue);
         break;
-      case SearchAssistantStep.previous_locations_select:
-        this.handlePreviousLocationsSubmit(this.state.currentInputValue);
-        break;
       default:
     }
 
-    this.setState({ currentInputValue: undefined });
+    this.setState({ currentInputValue: '' });
   }
 
   private handleInputKeyPress(e: React.KeyboardEvent<HTMLDivElement>) {
@@ -163,24 +168,40 @@ class TripSearchAssistant extends Component<any, any> {
     const {t} = this.props;
 
     if (this.state.loadingQuestion) {
-      return <TextField className={"search-assistant-step-component"} disabled={true}></TextField>
+      return <TextField key="search-assistant-empty-field" className={"search-assistant-step-component"} disabled={true}></TextField>
     }
 
     switch (step) {
       case SearchAssistantStep.open_chat:
+        const inputOptions = this.getOpenChatInputOptions();
+        const optionsDisplay = inputOptions.length > 0 ? 'flex' : 'none';
         return <Autocomplete
           freeSolo={this.state.currentStatus !== ChatOutcomeStatus.exceeded}
-          componentsProps={{popper: {placement: "top-start"}}}
+          componentsProps={{popper: {style: {display: optionsDisplay}, placement: "top-start"}}}
+          disableClearable={true}
           id="search-assistant-open-chat-input"
           key="search-assistant-open-chat-input"
           className={"search-assistant-step-component"}
-          onChange={(e, v) => this.setState({ currentInputValue: v as string})}
-          options={[this.getOpenChatInputOptions()]}
-          autoHighlight={true}
           autoSelect={true}
+          autoHighlight={true}
+          onChange={(e, v) => this.setState({ currentInputValue: v as string})}
+          options={inputOptions}
+          value={this.state.currentInputValue}
           renderInput={(params) => <TextField {...params}
-                                              autoFocus
-                                              onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
+                                              autoFocus={true}
+                                              key={"search-assistant-chat-input-field"}
+                                              onKeyDownCapture={e => this.handleInputKeyPress(e)}
+                                              InputProps={{
+                                                ...params.InputProps,
+                                                endAdornment:
+                                                  <InputAdornment position="end">
+                                                    <div style={{display: "flex", flexDirection: "row", position: "relative"}}>
+                                                      {this.getDatesPickerComponent()}
+                                                      {this.getCompanionsSelectComponent()}
+                                                    </div>
+                                                  </InputAdornment>
+                                              }}
+          />}
         />
       case SearchAssistantStep.destination_known_select:
         return <Autocomplete
@@ -195,6 +216,7 @@ class TripSearchAssistant extends Component<any, any> {
           autoHighlight={true}
           renderInput={(params) => <TextField {...params}
                                               autoFocus
+                                              key={"search-assistant-destination-or-type-select-field"}
                                               onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
         />
       case SearchAssistantStep.destination_select:
@@ -219,40 +241,20 @@ class TripSearchAssistant extends Component<any, any> {
           getOptionLabel={(tag: Tag) => tag.name as string}
           autoHighlight={true}
           renderInput={(params) => (
-            <TextField{...params} autoFocus onKeyDownCapture={e => this.handleInputKeyPress(e)}/>
+            <TextField{...params}
+                      autoFocus
+                      key={"search-assistant-tags-select-field"}
+                      onKeyDownCapture={e => this.handleInputKeyPress(e)}/>
           )}
         />;
-      case SearchAssistantStep.previous_locations_select:
-        return <SearchInput
-          multiple={true}
-          key={"search-assistant-previous-locations"}
-          searchFunction={query => this.searchApiService.searchAccommodation(query)}
-          onValueChange={dest => this.setState({currentInputValue: dest as Nameable})}
-          currentValue={this.state.previousLocations?.locations}
-          keyDownHandler={e => this.handleInputKeyPress(e)}
-          initialOptions={this.state.previousLocations?.locations ? this.state.previousLocations?.locations : []}
-          className={"search-assistant-step-component"}
-          optionComponentGenerator={(props, option) => this.generateLocationOption(props, option as Accommodation)}
-          startAdornment={<Hotel className={"location-start-icon"}/>}></SearchInput>;
       case SearchAssistantStep.complete:
-        return <Navigate to="/trip-search-results" state={{tripSearch: this.state.tripSearch}} replace={false} />
+        return <Navigate to="/trip-search-results" state={{outcome: this.state.currentOutcome}} replace={false} />
       default:
         return undefined;
     }
   }
 
   private handleDestinationSelect(dest: Nameable) {
-    const tripDetails = {
-      ...this.state.tripSearch.tripDetails,
-      category: null,
-      destination: dest
-    };
-    this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        tripDetails: tripDetails
-      }
-    });
     this.handleOpenChatSubmit(dest.name);
   }
 
@@ -265,31 +267,13 @@ class TripSearchAssistant extends Component<any, any> {
   }
 
   private handleTagsSubmit(value: Tag[]) {
-    const tags = {
-      ...this.state.tripSearch.tags,
-      tags: value.map(t => t.id)
-    };
     this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        tags: tags
+      currentOutcome: {
+        ...this.state.currentOutcome,
+        tags: value.map(t => t.id)
       }
     });
-    this.handleAnswerSubmit(SearchAssistantStep.previous_locations_select, value.map(tag => tag.name).join(', '));
-  }
-
-  private handlePreviousLocationsSubmit(value: Accommodation[]) {
-    const locations = {
-      ...this.state.previousLocations,
-      locations: value
-    };
-    this.setState({
-      tripSearch: {
-        ...this.state.tripSearch,
-        previousLocations: locations
-      }
-    });
-    this.handleAnswerSubmit(SearchAssistantStep.complete, value.map(l => l.name).join(', '));
+    this.handleAnswerSubmit(SearchAssistantStep.complete, value.map(tag => tag.name).join(', '));
   }
 
   private generateDestinationOption(props: any, option: Destination): ReactElement {
@@ -314,12 +298,12 @@ class TripSearchAssistant extends Component<any, any> {
 
   private handleOpenChatSubmit(answer: string) {
     if (this.props.t('assistant.chat.answer.suggest_search') === answer) {
-      const nextStep = this.state.currentOutcome?.accommodations?.length > 20 ? SearchAssistantStep.tags_select : SearchAssistantStep.complete;
+      const nextStep = this.state.currentOutcome?.accommodations?.length > 50 ? SearchAssistantStep.complete : SearchAssistantStep.tags_select ;
       this.handleAnswerSubmit(nextStep, answer);
       return;
     }
 
-    this.setState({ loadingQuestion: true, currentStep: SearchAssistantStep.open_chat });
+    this.setState({ loadingQuestion: true, currentStep: SearchAssistantStep.open_chat, currentInputValue: '' });
     this.addAnswer(answer);
     const messages = this.state.thread.messages.slice(1, this.state.thread.messages.length);
 
@@ -369,20 +353,82 @@ class TripSearchAssistant extends Component<any, any> {
     this.setState({ thread: currentThread });
   }
 
-  private generateLocationOption(props: any, option: Accommodation): ReactElement {
-    return (<Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-      <div className={"location-option-wrapper"}>
-        <Hotel className={"location-option-icon"} />
-        <div className={"location-wrapper-text"}>
-          <div className={"location-wrapper-title"}>
-            {option.name}
-          </div>
-          <div className={"location-wrapper-subtitle"}>
-            {option.city + ', ' + option.country}
-          </div>
-        </div>
-      </div>
-    </Box>);
+  private getCompanionsSelectComponent() {
+    let companionsSelectOpen = this.state.companionsSelectOpen;
+    return <>
+      { companionsSelectOpen ? <div className={"search-assistant-companions-wrapper"}>
+        <div ref={this.companionsWrapperRef} className="search-assistant-companions-select"><CompanionsSelect
+          initialValueExtractor={() => this.state.currentCompanions}
+          onValueChange={(v: TripCompanions) => this.onCompanionsChanged(v as TripCompanions)}>
+        </CompanionsSelect></div></div> : null }
+      <IconButton
+        size={"small"}
+        className={"search-assistant-companions-icon"}
+        onClick={e => this.setState({ companionsSelectOpen: true})}>
+        <Group/>
+      </IconButton>
+    </>;
+  }
+
+  private getDatesPickerComponent() {
+    const dateLocale = SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language : "en-US";
+    return (
+      <DatePicker
+        key="search-assistant-dates-select"
+        className={"search-assistant-step-component"}
+        popperClassName={"search-assistant-dates-select"}
+        minDate={new Date()}
+        selected={this.state.currentDates && this.state.currentDates.length ? this.state.currentDates[0] : null}
+        onChange={(dates: [Date | null, Date | null]) => this.onDatesChange(dates)}
+        startDate={this.state.currentDates && this.state.currentDates.length ? this.state.currentDates[0] : null}
+        endDate={this.state.currentDates && this.state.currentDates.length ? this.state.currentDates[1] : null}
+        selectsRange
+        dateFormat={DateHelper.getDateFormatString(dateLocale)}
+        locale={SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language.split('-')[0] : "en"}
+        customInput={
+          <IconButton
+            size={"small"}
+            className={"search-assistant-dates-select-icon"}>
+            <CalendarMonth/>
+          </IconButton>}
+      />
+    )
+  }
+
+  private onCompanionsChanged(companions: TripCompanions) {
+    this.setState({ currentCompanions: companions, currentInputValue: this.getCompanionsDisplay(companions)});
+  }
+
+  private onDatesChange(value: [Date | null, Date | null]) {
+    this.setState({ currentDates: value});
+    const start = value && value[0] ? value[0] : undefined;
+    const end = value && value[1] ? value[1] : undefined;
+    if (!start || !end || start > end) {
+      return;
+    }
+    const dateLocale = SUPPORTED_LOCALES.includes(navigator.language.split('-')[0]) ? navigator.language : "en-US";
+    this.setState({ currentInputValue:  DateHelper.formatDateRange(start, end, dateLocale)});
+  }
+
+  private getCompanionsDisplay(value: TripCompanions) {
+    let display = '';
+    if (value) {
+      display = value.adults + ' ' + this.props.t('companions.adults');
+      if (value.children && value.children > 0) {
+        display += ', ' + value.children + ' ' + this.props.t('companions.children') + ' (';
+
+        for(let i=0; i<value.children; i++) {
+          if (i !== 0) {
+            display += ' & '
+          }
+          display += '' + value.childrenAges?.[i];
+        }
+        display += ')';
+      } else {
+        display += ', 0 ' + this.props.t('companions.children');
+      }
+    }
+    return display;
   }
 }
 

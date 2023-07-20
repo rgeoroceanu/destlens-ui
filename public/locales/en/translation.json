@@ -78,7 +78,7 @@
         "previous_locations_select": "Enter a few locations where did you enjoyed staying in the past. This will help a lot in finding the best results for your personal tastes."
       },
       "answer": {
-        "suggest_search": "Unterkünfte finden basierend auf die aktuelle Angeben."
+        "suggest_search": "Find accommodations based on the current input."
       }
     }
   }

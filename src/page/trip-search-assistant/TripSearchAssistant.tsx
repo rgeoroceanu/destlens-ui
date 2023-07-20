@@ -39,6 +39,13 @@ class TripSearchAssistant extends Component<any, any> {
     super(props);
     this.state = this.getInitialState();
     this.companionsWrapperRef = React.createRef();
+    if (this.state.thread.messages[0].role === ChatMessageRole.user) {
+      this.setState({ loadingQuestion: true });
+
+      this.searchApiService.processChat(this.state.thread.messages)
+        .then(response => this.processOpenChatResponse(response))
+        .finally(() => this.setState({ loadingQuestion: false }));
+    }
   }
 
   componentDidMount() {
@@ -97,12 +104,20 @@ class TripSearchAssistant extends Component<any, any> {
 
   private getInitialState() {
     const chatThread = new ChatThread();
-    const message = new ChatMessage(ChatMessageRole.assistant, this.props.t('assistant.chat.question.destination_known_select'));
+    const queryParams = new URLSearchParams(window.location.search);
+    const initialMessage = queryParams.get("initial_message");
+    let message;
+    if (initialMessage) {
+      message = new ChatMessage(ChatMessageRole.user, initialMessage);
+    } else {
+      message = new ChatMessage(ChatMessageRole.assistant, this.props.t('assistant.chat.question.destination_known_select'));
+    }
+
     chatThread.messages.push(message);
 
     return {
       thread: chatThread,
-      currentStep: SearchAssistantStep.destination_known_select,
+      currentStep: initialMessage ? SearchAssistantStep.open_chat : SearchAssistantStep.destination_known_select,
       loadingQuestion: false,
       currentInputValue: '',
       tags: [],

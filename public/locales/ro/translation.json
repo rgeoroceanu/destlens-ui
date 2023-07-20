@@ -66,7 +66,7 @@
     "chat": {
       "skip": "(Pas sarit)",
       "question": {
-        "destination_known_select": "Salut! Sunt Tripwizard si te voi ajuta sa gasesti vacanta perfecta! Stii unde vrei sa mergi?",
+        "destination_known_select": "Salut! Sunt Destlens si te voi ajuta sa gasesti vacanta perfecta! Stii unde vrei sa mergi?",
         "destination_select": "Super! Unde vrei sa mergi?",
         "type_select": "Nici o problema! O sa gasim ceva potrivit pentru tine. Trbuie doar sa ne spui ce tip de vacanta iti doresti.",
         "period_known_select": "Stii perioada exacta cand vrei sa calatoresti?",
@@ -79,7 +79,7 @@
         "complete": "Felicitari!"
       },
       "answer": {
-        "suggest_complete": "Incepe cautarea de hoteluri bazata pe aceste preferinte."
+        "suggest_search": "Incepe cautarea de hoteluri bazata pe aceste preferinte."
       }
     }
   }

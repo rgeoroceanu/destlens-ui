@@ -11,7 +11,7 @@ class SearchApiService {
 
   private http = axios.create({
     //baseURL: "http://localhost:8080/",
-    baseURL: "https://api.tripwizard.io/",
+    baseURL: "https://api.destlens.com/",
     headers: {
       "Content-Type": "application/json"
     }

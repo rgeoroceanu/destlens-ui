@@ -5,7 +5,7 @@
     "restart": "Neustart",
     "yes": "Ja",
     "no": "Nein",
-    "search": "Suchen",
+    "search": "Suche starten",
     "skip": "Überspringen"
   },
   "type": {
@@ -66,8 +66,8 @@
     "chat": {
       "skip": "(Schritt überspringen)",
       "question": {
-        "destination_known_select": "Hallo! Ich bin Tripwizard und helfe dir, deine perfekte Reise zu finden. Weißt du, wo du hin willst?",
-        "destination_select": "Super! Also, wo willst du hin?",
+        "destination_known_select": "Hallo! Ich bin Destlens und helfe Ihnen, Ihre perfekte Reise zu finden. Weißen Sie, wo Sie hin wollen?",
+        "destination_select": "Super! Also, wo wollen Sie hin?",
         "type_select": "Kein Problem! Wir finden etwas Passendes für dich. Du musst uns nur mitteilen, welche Art von Reise du wünschst.",
         "period_known_select": "Weißst du den genauen Zeitraum, in dem du reisen möchtest?",
         "period_duration_select": "Kein Problem! Dann kannst du einen ungefähren Zeitraum auswählen. Wähle zuerst die Reisedauer:",

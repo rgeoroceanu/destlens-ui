@@ -41,8 +41,8 @@ class Chat extends Component<any, any> {
             </Button> : null }
             { searchClickListener && searchButtonVisible ? <Button onClick={searchClickListener}
                                                                color="primary"
-                                                               className={"chat-state-button"}
-                                                               variant="outlined"
+                                                               className={"chat-state-button chat-state-button-search"}
+                                                               variant="contained"
                                                                startIcon={<Search />}>
               <span className={"chat-state-button-label"}>{t('general.search')}</span>
             </Button> : null }

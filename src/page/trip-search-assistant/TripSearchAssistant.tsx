@@ -73,7 +73,7 @@ class TripSearchAssistant extends Component<any, any> {
             skipClickListener={() => this.handleSkip()}
             skipButtonVisible={this.state.currentStep===SearchAssistantStep.tags_select }
             searchClickListener={() => this.handleSearch()}
-            searchButtonVisible={this.state.currentStatus === ChatOutcomeStatus.complete || this.state.currentStatus === ChatOutcomeStatus.exceeded }>
+            searchButtonVisible={(this.state.currentStatus === ChatOutcomeStatus.complete || this.state.currentStatus === ChatOutcomeStatus.exceeded) && this.state.currentStep !== SearchAssistantStep.tags_select }>
           </Chat>
         </Container>
       </div>
@@ -131,7 +131,7 @@ class TripSearchAssistant extends Component<any, any> {
   }
 
   private handleSearch() {
-    this.setState({ currentStep: SearchAssistantStep.complete });
+    this.handleOpenChatSubmit(this.props.t('assistant.chat.answer.suggest_search'));
   }
 
   private handleSubmitAnswer() {
@@ -160,6 +160,7 @@ class TripSearchAssistant extends Component<any, any> {
 
   private handleInputKeyPress(e: React.KeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Enter') {
+      console.log('submitted ' + this.state.currentInputValue)
       this.handleSubmitAnswer();
     }
   }
@@ -182,7 +183,6 @@ class TripSearchAssistant extends Component<any, any> {
           id="search-assistant-open-chat-input"
           key="search-assistant-open-chat-input"
           className={"search-assistant-step-component"}
-          autoSelect={true}
           autoHighlight={true}
           onChange={(e, v) => this.setState({ currentInputValue: v as string})}
           options={inputOptions}
@@ -190,6 +190,7 @@ class TripSearchAssistant extends Component<any, any> {
           renderInput={(params) => <TextField {...params}
                                               autoFocus={true}
                                               key={"search-assistant-chat-input-field"}
+                                              onChange={e => this.setState({ currentInputValue: e.target.value as string})}
                                               onKeyDownCapture={e => this.handleInputKeyPress(e)}
                                               InputProps={{
                                                 ...params.InputProps,
@@ -212,10 +213,12 @@ class TripSearchAssistant extends Component<any, any> {
           className={"search-assistant-step-component"}
           onChange={(e, v) => this.setState({ currentInputValue: v as string})}
           options={[AnswerYesNoType.yes, AnswerYesNoType.no]}
-          getOptionLabel={o => t('type.answerYesNoType.' + o)}
+          getOptionLabel={o => [AnswerYesNoType.yes.toUpperCase(), AnswerYesNoType.no.toUpperCase()].includes(o) ? t('type.answerYesNoType.' + o) : o}
           autoHighlight={true}
+          open={true}
           renderInput={(params) => <TextField {...params}
                                               autoFocus
+                                              onChange={e => this.setState({ currentInputValue: e.target.value as string})}
                                               key={"search-assistant-destination-or-type-select-field"}
                                               onKeyDownCapture={e => this.handleInputKeyPress(e)}/>}
         />
@@ -261,8 +264,10 @@ class TripSearchAssistant extends Component<any, any> {
   private handleDestinationOrTypeSubmit(value: string) {
     if (AnswerYesNoType.yes === value) {
       this.handleAnswerSubmit(SearchAssistantStep.destination_select, this.props.t('type.answerYesNoType.YES'));
-    } else {
+    } else if (AnswerYesNoType.no === value) {
       this.handleOpenChatSubmit(this.props.t('type.answerYesNoType.NO'));
+    } else {
+      this.handleOpenChatSubmit(this.state.currentInputValue);
     }
   }
 

@@ -5,7 +5,7 @@
     "restart": "Restart",
     "yes": "Yes",
     "no": "No",
-    "search": "Search",
+    "search": "Start search",
     "skip": "Skip"
   },
   "type": {
@@ -66,7 +66,7 @@
     "chat": {
       "skip": "(Skip step)",
       "question": {
-        "destination_known_select": "Hello there! I am Tripwizard and I will help you find your perfect trip. Do you know where you want to go?",
+        "destination_known_select": "Hello there! I am Destlens and I will help you find your perfect trip. Do you know where you want to go?",
         "destination_select": "Great! So where do you want to go?",
         "type_select": "No problem! We will find something suitable for you. You just need to tell us what kind of trip do you want.",
         "period_known_select": "Do you know the exact period when you plan to travel?",
@@ -75,11 +75,10 @@
         "period_dates_select": "Perfect! Then select the dates.",
         "companions_select": "Who do you plan to travel with?",
         "tags_select": "Now let's select some things that you would like to be included at your accommodation.",
-        "previous_locations_select": "Enter a few locations where did you enjoyed staying in the past. This will help a lot in finding the best results for your personal tastes.",
-
+        "previous_locations_select": "Enter a few locations where did you enjoyed staying in the past. This will help a lot in finding the best results for your personal tastes."
       },
       "answer": {
-        "suggest_complete": "Finde Unterkünfte für mich basierend auf diesen Präferenzen."
+        "suggest_search": "Unterkünfte finden basierend auf die aktuelle Angeben."
       }
     }
   }

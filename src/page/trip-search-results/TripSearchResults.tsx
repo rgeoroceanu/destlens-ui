@@ -1,15 +1,17 @@
 import React, {Component} from 'react';
 import './TripSearchResults.css';
 import Progress from "../../component/progress/Progress";
-import {Container} from "@mui/material";
+import {Button, Container} from "@mui/material";
 import SearchResults from "../../component/search-results/SearchResults";
 import CircularProgress from "@mui/material/CircularProgress";
 import SearchApiService from "../../service/SearchApiService";
 import withRouter from "../../helper/WithRouter";
 import {withTranslation} from "react-i18next";
 import ReactGA from "react-ga4";
-import ChatOutcome from "../../model/ChatOutcome";
 import Accommodation from "../../model/Accommodation";
+import ChatThread from "../../model/ChatThread";
+import {ArrowBack} from "@mui/icons-material";
+import {Navigate} from "react-router-dom";
 
 class TripSearchResults extends Component<any, any> {
 
@@ -19,14 +21,16 @@ class TripSearchResults extends Component<any, any> {
     super(props);
     this.state = {
       results: [],
-      searching: false
+      searching: false,
+      back: false
     };
   }
 
   componentDidMount() {
     ReactGA.send({ hitType: "pageview", page: "/trip-search-results", title: "Search Results" });
     if (this.state.searching === false) {
-      this.startSearch(this.props.location?.state?.outcome);
+      this.setState({thread: this.props.location?.state?.thread});
+      this.startSearch(this.props.location?.state?.thread);
     }
   }
 
@@ -38,10 +42,19 @@ class TripSearchResults extends Component<any, any> {
         <Progress value={100}/>
         <div className={"content-scrollable"}>
           <Container className={"content-wrapper"}>
+            <Button
+              className="navigation-back"
+              variant="contained"
+              color="primary"
+              startIcon={<ArrowBack />}
+              onClick={e => this.setState({back: true})}>
+              {this.props.t('general.previous')}
+            </Button>
             { this.state.searching ? this.getProgressComponent() :
               (results.length > 0 ? <SearchResults results={results}></SearchResults> : this.getNoResultsComponent()) }
           </Container>
         </div>
+        {this.state.back ? <Navigate to="/" state={{thread: this.state.thread}} replace={false} /> : null }
       </div>
     );
   }
@@ -58,13 +71,13 @@ class TripSearchResults extends Component<any, any> {
     </div>
   }
 
-  private startSearch(outcome: ChatOutcome) {
+  private startSearch(thread: ChatThread) {
     this.setState({
       searching: true,
       results: []
     });
 
-    this.searchService.findMatchingAccommodations(outcome)
+    this.searchService.findMatchingAccommodations(thread, 10)
       .then(res => this.onMatchResults(res))
       .finally(() => this.setState({
         searching: false

@@ -8,25 +8,28 @@ import Accommodation from "../../model/Accommodation";
 interface SearchResultValue {
   result: Accommodation;
   index: number;
+  navigationVisible: boolean
 }
 
-function SearchResult({result, index}: SearchResultValue) {
+function SearchResult({result, index, navigationVisible}: SearchResultValue) {
   const [currentImageIndex, setCurrentImageIndex] = React.useState<number>(0);
 
   return <div className={"search-result-wrapper"} onClick={e => handleClick(result)}>
     <div className={"search-result-image-container"}>
       <img className={"search-result-image"}
            src={result.photos?.[currentImageIndex]} alt={"accommodation"}/>
-      <IconButton aria-label="image-next"
+      { navigationVisible ? <IconButton aria-label="image-next"
+                  hidden={!navigationVisible}
                   className={"search-result-image-next"}
                   onClick={e => handleNextImage(e, setCurrentImageIndex, result.photos.length, currentImageIndex)}>
         <ArrowRightRounded />
-      </IconButton>
-      <IconButton aria-label="image-previous"
+      </IconButton> : null }
+      { navigationVisible ? <IconButton aria-label="image-previous"
+                  hidden={!navigationVisible}
                   className={"search-result-image-previous"}
                   onClick={e => handlePreviousImage(e, setCurrentImageIndex, result.photos.length, currentImageIndex)}>
         <ArrowLeftRounded />
-      </IconButton>
+      </IconButton> : null }
       {/*{ index === 0 && result.score > 0.7 ? <div className={"search-result-score"}>{'Best match: ' + Math.floor(result.score * 100) + '%'}</div> : null }*/}
     </div>
     <div className={"search-result-details-wrapper"}>

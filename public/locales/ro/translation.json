@@ -78,6 +78,7 @@
         "previous_locations_select": "Alege cateva hoteluri unde ai stat in trecut. Asta ne va ajuta sa gasim cea mai potrivita vacanta pentru tine.",
         "complete": "Felicitari!"
       },
+      "recommend": "Recomandari",
       "answer": {
         "suggest_search": "Incepe cautarea de hoteluri bazata pe aceste preferinte."
       }

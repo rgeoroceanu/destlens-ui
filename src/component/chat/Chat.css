@@ -79,6 +79,10 @@
     color: white !important;
 }
 
+.recommendations-empty {
+    margin-bottom: 240px
+}
+
 @media (max-width: 599px) {
 
 }

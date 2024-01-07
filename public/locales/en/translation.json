@@ -77,6 +77,7 @@
         "tags_select": "Now let's select some things that you would like to be included at your accommodation.",
         "previous_locations_select": "Enter a few locations where did you enjoyed staying in the past. This will help a lot in finding the best results for your personal tastes."
       },
+      "recommend": "Recommendations",
       "answer": {
         "suggest_search": "Find accommodations based on the current input."
       }

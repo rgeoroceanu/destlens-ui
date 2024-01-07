@@ -3,3 +3,8 @@
     font-weight: 500;
     color: #01aac1;
 }
+
+.navigation-back {
+    color: white !important;
+    margin-bottom: 16px!important;
+}

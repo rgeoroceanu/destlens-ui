@@ -7,6 +7,7 @@ import {TypeAnimation} from "react-type-animation";
 import {Button, IconButton} from "@mui/material";
 import {withTranslation} from "react-i18next";
 import ChatMessageRole from "../../model/ChatMessageRole";
+import RecommendationsBox from "../recommandations-box/RecommendationsBox";
 
 class Chat extends Component<any, any> {
 
@@ -44,7 +45,7 @@ class Chat extends Component<any, any> {
                                                                className={"chat-state-button chat-state-button-search"}
                                                                variant="contained"
                                                                startIcon={<Search />}>
-              <span className={"chat-state-button-label"}>{t('general.search')}</span>
+              <span className={"chat-state-button-label"}>{t('assistant.chat.recommend')}</span>
             </Button> : null }
           </div>
         }
@@ -62,6 +63,10 @@ class Chat extends Component<any, any> {
   }
 
   componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<any>, snapshot?: any) {
+    this.updateScrollPosition();
+  }
+
+  private updateScrollPosition() {
     const messagesWrapper = document.getElementById("chat-messages");
     if (messagesWrapper) {
       messagesWrapper.scrollTop = messagesWrapper.scrollHeight;
@@ -77,6 +82,7 @@ class Chat extends Component<any, any> {
     return <div id="chat-messages" className={"chat-messages"}>
       { messsageComponents }
       { loading ? this.getTypingAnimation() : null}
+      {this.props.recommendations && this.props.recommendations.length > 0 ? <RecommendationsBox recommendations={this.props.recommendations}></RecommendationsBox> : <p className={"recommendations-empty"}></p> }
     </div>;
   }
 

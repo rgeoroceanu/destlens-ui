@@ -78,8 +78,9 @@
         "previous_locations_select": "Gib ein paar Orte ein, an denen du dich in der Vergangenheit gerne aufgehalten hast. Dies wird dir sehr helfen, die besten Ergebnisse für deinen persönlichen Geschmack zu finden.",
         "complete": "Herzlichen Glückwunsch! Du hast alle Schritte abgeschlossen! Jetzt suche ich etwas Passendes nur für dich!"
       },
+      "recommend": "Empfehlungen",
       "answer": {
-        "suggest_search": "Suche starten basiert auf die Angaben."
+        "suggest_search": "Empfehlungen bekommen basiert auf die Angaben."
       }
     }
   }

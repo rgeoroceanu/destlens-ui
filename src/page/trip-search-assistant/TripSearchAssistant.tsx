@@ -15,7 +15,6 @@ import SearchApiService from "../../service/SearchApiService";
 import DestinationType from "../../model/DestinationType";
 import Nameable from "../../model/Nameable";
 import {Navigate} from "react-router-dom";
-import Tag from "../../model/Tag";
 import "react-datepicker/dist/react-datepicker.css";
 import Progress from "../../component/progress/Progress";
 import {withTranslation} from "react-i18next";
@@ -29,6 +28,9 @@ import DatePicker from "react-datepicker";
 import DateHelper from "../../helper/DateHelper";
 import TripCompanions from "../../model/TripCompanions";
 import CompanionsSelect from "../../component/companions-select/CompanionsSelect";
+import Carousel from "react-material-ui-carousel";
+import SearchResult from "../../component/search-result/SearchResult";
+import RecommendationsBox from "../../component/recommandations-box/RecommendationsBox";
 
 class TripSearchAssistant extends Component<any, any> {
 
@@ -51,8 +53,10 @@ class TripSearchAssistant extends Component<any, any> {
   componentDidMount() {
     ReactGA.send({ hitType: "pageview", page: "/", title: "Search Assistant" });
     document.addEventListener("mousedown", this.handleClickOutside.bind(this));
-    this.searchApiService.getAllTags()
-      .then(tags => this.setState({tags: tags}));
+    if (this.props.location?.state?.thread) {
+      this.setState({thread: this.props.location?.state?.thread, currentStep: SearchAssistantStep.open_chat});
+    }
+
   }
 
   componentWillUnmount() {
@@ -78,9 +82,10 @@ class TripSearchAssistant extends Component<any, any> {
             sendClickListener={() => this.handleSubmitAnswer()}
             restartClickListener={() => this.handleRestart()}
             skipClickListener={() => this.handleSkip()}
-            skipButtonVisible={this.state.currentStep===SearchAssistantStep.tags_select }
+            skipButtonVisible={false}
             searchClickListener={() => this.handleSearch()}
-            searchButtonVisible={(this.state.currentStatus === ChatOutcomeStatus.complete || this.state.currentStatus === ChatOutcomeStatus.exceeded) && this.state.currentStep !== SearchAssistantStep.tags_select }>
+            searchButtonVisible={(this.state.thread.messages.length > 3 || this.state.currentStatus === ChatOutcomeStatus.exceeded) }
+            recommendations={this.state.recommendations}>
           </Chat>
         </Container>
       </div>
@@ -90,13 +95,11 @@ class TripSearchAssistant extends Component<any, any> {
   private getProgressValue(step: SearchAssistantStep) {
     switch (step) {
       case SearchAssistantStep.destination_known_select:
-        return 10;
-      case SearchAssistantStep.destination_select:
         return 20;
+      case SearchAssistantStep.destination_select:
+        return 40;
       case SearchAssistantStep.open_chat:
-        return 50;
-      case SearchAssistantStep.tags_select:
-        return 75;
+        return 70;
       default:
         return 100;
     }
@@ -114,18 +117,19 @@ class TripSearchAssistant extends Component<any, any> {
     }
 
     chatThread.messages.push(message);
+    const currentStep = initialMessage ? SearchAssistantStep.open_chat : SearchAssistantStep.destination_known_select
 
     return {
-      thread: chatThread,
-      currentStep: initialMessage ? SearchAssistantStep.open_chat : SearchAssistantStep.destination_known_select,
-      loadingQuestion: false,
-      currentInputValue: '',
-      tags: [],
-      currentOutcome: null,
-      currentStatus: null,
       companionsSelectOpen: false,
+      currentCompanions: new TripCompanions(),
       currentDates: null,
-      currentCompanions: new TripCompanions()
+      currentInputValue: '',
+      currentStatus: null,
+      currentStep: currentStep,
+      loadingQuestion: false,
+      recommendations: [],
+      thread: chatThread,
+      searching: false
     };
   }
 
@@ -136,13 +140,7 @@ class TripSearchAssistant extends Component<any, any> {
   private handleSkip() {
     this.setState({ currentInputValue: undefined });
     this.addAnswer('(Step skipped)');
-    switch (this.state.currentStep) {
-      case SearchAssistantStep.tags_select:
-        this.setState({ currentStep: SearchAssistantStep.complete});
-        break;
-      default:
-        this.setState({ currentStep: SearchAssistantStep.complete});
-    }
+    this.setState({ currentStep: SearchAssistantStep.complete});
   }
 
   private handleSearch() {
@@ -164,9 +162,6 @@ class TripSearchAssistant extends Component<any, any> {
       case SearchAssistantStep.destination_select:
         this.handleDestinationSelect(this.state.currentInputValue);
         break;
-      case SearchAssistantStep.tags_select:
-        this.handleTagsSubmit(this.state.currentInputValue);
-        break;
       default:
     }
 
@@ -175,7 +170,6 @@ class TripSearchAssistant extends Component<any, any> {
 
   private handleInputKeyPress(e: React.KeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Enter') {
-      console.log('submitted ' + this.state.currentInputValue)
       this.handleSubmitAnswer();
     }
   }
@@ -203,7 +197,7 @@ class TripSearchAssistant extends Component<any, any> {
           options={inputOptions}
           value={this.state.currentInputValue}
           renderInput={(params) => <TextField {...params}
-                                              autoFocus={true}
+                                              autoFocus={false}
                                               key={"search-assistant-chat-input-field"}
                                               onChange={e => this.setState({ currentInputValue: e.target.value as string})}
                                               onKeyDownCapture={e => this.handleInputKeyPress(e)}
@@ -243,30 +237,12 @@ class TripSearchAssistant extends Component<any, any> {
           className={"search-assistant-step-component"}
           searchFunction={query => this.searchApiService.searchDestination(query)}
           onValueChange={dest => this.setState({currentInputValue: dest as Nameable})}
-          currentValue={this.state.tripSearch?.tripDetails?.destination}
+          currentValue={this.state.destination}
           keyDownHandler={e => this.handleInputKeyPress(e)}
-          initialOptions={this.state.tripSearch?.tripDetails.destination ? [this.state.tripSearch.tripDetails.destination] : []}
+          initialOptions={this.state.destination ? [this.state.destination] : []}
           optionComponentGenerator={(props, option) => this.generateDestinationOption(props, option as Destination)}/>;
-      case SearchAssistantStep.tags_select:
-        return <Autocomplete
-          multiple
-          componentsProps={{popper: {placement: "top-start"}}}
-          id="search-assistant-tags-select"
-          key="search-assistant-tags-select"
-          className={"search-assistant-step-component search-assistant-tags-select"}
-          onChange={(e, v) => this.setState({ currentInputValue: v as Tag[]})}
-          options={this.state.tags}
-          getOptionLabel={(tag: Tag) => tag.name as string}
-          autoHighlight={true}
-          renderInput={(params) => (
-            <TextField{...params}
-                      autoFocus
-                      key={"search-assistant-tags-select-field"}
-                      onKeyDownCapture={e => this.handleInputKeyPress(e)}/>
-          )}
-        />;
       case SearchAssistantStep.complete:
-        return <Navigate to="/trip-search-results" state={{outcome: this.state.currentOutcome}} replace={false} />
+        return <Navigate to="/trip-search-results" state={{thread: this.state.thread}} replace={false} />
       default:
         return undefined;
     }
@@ -284,16 +260,6 @@ class TripSearchAssistant extends Component<any, any> {
     } else {
       this.handleOpenChatSubmit(this.state.currentInputValue);
     }
-  }
-
-  private handleTagsSubmit(value: Tag[]) {
-    this.setState({
-      currentOutcome: {
-        ...this.state.currentOutcome,
-        tags: value.map(t => t.id)
-      }
-    });
-    this.handleAnswerSubmit(SearchAssistantStep.complete, value.map(tag => tag.name).join(', '));
   }
 
   private generateDestinationOption(props: any, option: Destination): ReactElement {
@@ -318,8 +284,7 @@ class TripSearchAssistant extends Component<any, any> {
 
   private handleOpenChatSubmit(answer: string) {
     if (this.props.t('assistant.chat.answer.suggest_search') === answer) {
-      const nextStep = this.state.currentOutcome?.accommodations?.length > 50 ? SearchAssistantStep.complete : SearchAssistantStep.tags_select ;
-      this.handleAnswerSubmit(nextStep, answer);
+      this.setState({ currentStep: SearchAssistantStep.complete });
       return;
     }
 
@@ -347,7 +312,11 @@ class TripSearchAssistant extends Component<any, any> {
     const text = response.message?.content ? response.message?.content : '';
     const message = new ChatMessage(ChatMessageRole.assistant, text);
     currentThread.messages.push(message);
-    this.setState({ thread: currentThread, currentOutcome: response.outcome, currentStatus: response.status });
+    this.setState({ thread: currentThread, currentStatus: response.status });
+
+    if (currentThread.messages.length > 3 && this.state.searching === false) {
+      this.startSearch(currentThread);
+    }
   }
 
   private getOpenChatInputOptions() {
@@ -449,6 +418,18 @@ class TripSearchAssistant extends Component<any, any> {
       }
     }
     return display;
+  }
+
+  private startSearch(thread: ChatThread) {
+    this.setState({
+      searching: true
+    });
+
+    this.searchApiService.findMatchingAccommodations(thread, 5)
+      .then(res => this.setState({recommendations: res, searching: false}))
+      .finally(() => this.setState({
+        searching: false
+      }));
   }
 }
 
